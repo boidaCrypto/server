@@ -20,16 +20,6 @@ rest_api_key = "415f1aec476684d25a44afce51a98d2f"
 KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
 
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def LocalRegister(request, format=None):
-    kakao_authorization_code = request.data["kakao_authorization_code"]
-    redirect_uri = request.data["redirect_uri"]
-    return Response({"kakao_authorization_code": kakao_authorization_code, "redirect_uri": redirect_uri},
-                    status=status.HTTP_200_OK)
-
-
 def kakao_login(request):
     return redirect(
         f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code"

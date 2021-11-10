@@ -9,16 +9,16 @@ from users.models import User
 from allauth.socialaccount.models import SocialAccount
 from django.conf import settings
 from dj_rest_auth.registration.views import SocialLoginView
-from allauth.socialaccount.providers.google import views as google_view
+from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from django.http import JsonResponse
-import requests
+import requests as req
 from rest_framework import status
 from json.decoder import JSONDecodeError
 
 rest_api_key = "415f1aec476684d25a44afce51a98d2f"
 KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback"
-
+BASE_URL = 'http://localhost:8000/'
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -27,6 +27,8 @@ def LocalRegister(request, format=None):
     redirect_uri = request.data["redirect_uri"]
     return Response({"kakao_authorization_code": kakao_authorization_code, "redirect_uri" : redirect_uri}, status=status.HTTP_200_OK)
 
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
 
 def kakao_login(request):
     return redirect(
@@ -34,29 +36,32 @@ def kakao_login(request):
     )
 
 
-# def kakao_callback(request):
-#     rest_api_key = "415f1aec476684d25a44afce51a98d2f"
-#     code = request.GET.get("code")
-#     redirect_uri = KAKAO_CALLBACK_URI
-#     token_req = requests.get(
-#         f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
-#     )
-#
-#     token_req_json = token_req.json()
-#     error = token_req_json.get("error")
-#     if error is not None:
-#         raise JSONDecodeError(error)
-#
-#     access_token = token_req_json.get("access_token")
-#
-#     profile_request = requests.get(
-#         "https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"}
-#     )
-#     profile_json = profile_request.json()
-#     kakao_account = profile_json.get('kakao_account')
-#     email = kakao_account.get('email')
-#     try:
-#         user = User.objects.get(email=email)
-#         social_user = SocialAccount.objects.get(user=user)
-#         if social_user is None:
-#             return JsonResponse({'err_msg'})
+
+def kakao_callback(request):
+    code = request.GET.get("code")
+    print("code-------------------------", code)
+    redirect_uri = KAKAO_CALLBACK_URI
+    token_req = req.get(
+        f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
+    )
+
+    token_req_json = token_req.json()
+    error = token_req_json.get("error")
+    if error is not None:
+        raise JSONDecodeError(error)
+
+    access_token = token_req_json.get("access_token")
+    print("access_token-------------------------", access_token)
+    headers = ({'Authorization': f"Bearer {access_token}"})
+    user_profile_info_uri = 'https://kapi.kakao.com/v2/user/me'
+    user_profile_info = req.get(user_profile_info_uri, headers=headers)
+    json_data = user_profile_info.json()
+    print("json_data : ", json_data)
+
+
+
+
+class KakaoLogin(SocialLoginView):
+    adapter_class = kakao_view.KakaoOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = KAKAO_CALLBACK_URI

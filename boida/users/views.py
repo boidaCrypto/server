@@ -17,8 +17,8 @@ from rest_framework import status
 from json.decoder import JSONDecodeError
 
 rest_api_key = "415f1aec476684d25a44afce51a98d2f"
-# KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
-KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
+KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
+# KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
 
 

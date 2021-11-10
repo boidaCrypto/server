@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def LocalRegister(request, format=None):
+    print(request.data["kakao_token"])
     return Response({"msg": "완료!"}, status=status.HTTP_200_OK)

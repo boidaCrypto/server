@@ -17,8 +17,10 @@ from rest_framework import status
 from json.decoder import JSONDecodeError
 
 rest_api_key = "415f1aec476684d25a44afce51a98d2f"
-KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
+# KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
+KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
+
 
 def kakao_login(request):
     return redirect(
@@ -40,16 +42,17 @@ def kakao_callback(request):
         raise JSONDecodeError(error)
 
     access_token = token_req_json.get("access_token")
-    print("access_token-------------------------", access_token)
     headers = ({'Authorization': f"Bearer {access_token}"})
     user_profile_info_uri = 'https://kapi.kakao.com/v2/user/me'
     user_profile_info = req.get(user_profile_info_uri, headers=headers)
     json_data = user_profile_info.json()
-    print("json_data : ", json_data)
+    print(json_data)
 
     data = {'access_token': access_token, 'code': code}
+    print("data : ", data)
+    print(BASE_URL,"users/kakao/login/finish/")
     accept = req.post(
-        f"{BASE_URL}accounts/kakao/login/finish/", data=data)
+        f"{BASE_URL}users/kakao/login/finish/", data=data)
     accept_status = accept.status_code
     if accept_status != 200:
         return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)

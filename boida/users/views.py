@@ -24,7 +24,8 @@ KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback"
 @permission_classes([AllowAny])
 def LocalRegister(request, format=None):
     kakao_authorization_code = request.data["kakao_authorization_code"]
-    return Response({"msg": kakao_authorization_code}, status=status.HTTP_200_OK)
+    redirect_uri = request.data["redirect_uri"]
+    return Response({"kakao_authorization_code": kakao_authorization_code, "redirect_uri" : redirect_uri}, status=status.HTTP_200_OK)
 
 
 def kakao_login(request):

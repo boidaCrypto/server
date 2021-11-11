@@ -60,6 +60,15 @@ def kakao_callback(request):
     user_profile_info = req.post(user_profile_info_uri, headers=headers)
     json_data = user_profile_info.json()
     print(json_data)
+    print(json_data["id"])
+    print(json_data["connected_at"])
+    print(json_data["kakao_account"]["profile"]["nickname"])
+    print(json_data["kakao_account"]["profile"]["thumbnail_image_url"])
+    print(json_data["kakao_account"]["profile"]["profile_image_url"])
+    print(json_data["kakao_account"]["email"])
+    print(json_data["kakao_account"]["age_range"])
+    print(json_data["kakao_account"]["gender"])
+
 
     data = {'access_token': access_token, 'code': code}
     print("data : ", data)

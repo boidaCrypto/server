@@ -15,6 +15,7 @@ from django.http import JsonResponse
 import requests as req
 from rest_framework import status
 from json.decoder import JSONDecodeError
+from users.models import User
 
 CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
 CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
@@ -58,21 +59,11 @@ def kakao_callback(request):
     headers = ({'Authorization': f"Bearer {access_token}"})
     user_profile_info_uri = 'https://kapi.kakao.com/v2/user/me'
     user_profile_info = req.post(user_profile_info_uri, headers=headers)
-    json_data = user_profile_info.json()
-    print(json_data)
-    print(json_data["id"])
-    print(json_data["connected_at"])
-    print(json_data["kakao_account"]["profile"]["nickname"])
-    print(json_data["kakao_account"]["profile"]["thumbnail_image_url"])
-    print(json_data["kakao_account"]["profile"]["profile_image_url"])
-    print(json_data["kakao_account"]["email"])
-    print(json_data["kakao_account"]["age_range"])
-    print(json_data["kakao_account"]["gender"])
-
+    kakao_user = user_profile_info.json()
 
     data = {'access_token': access_token, 'code': code}
     print("data : ", data)
-    print(BASE_URL,"users/kakao/login/finish/")
+    print(BASE_URL, "users/kakao/login/finish/")
     accept = req.post(
         f"{BASE_URL}users/kakao/login/finish/", data=data)
     accept_status = accept.status_code
@@ -80,6 +71,25 @@ def kakao_callback(request):
         return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
     accept_json = accept.json()
     accept_json.pop('user', None)
+
+    # # 해당 이메일로 가입한 유저가 있는지 확인
+    # try :
+    #     user = User.objects.get(email = kakao_user["kakao_account"]["email"])
+    # except User.DoesNotExist:
+    #     print("회원가입된 이메일이 없어 회원가입을 진행합니다.")
+    #     User.objects.create(
+    #         email = kakao_user["kakao_account"]["email"],
+    #         platform_type= "kakao" ,
+    #         platform_id=kakao_user["id"],
+    #         nickname=kakao_user["kakao_account"]["profile"]["nickname"],
+    #         age_range=kakao_user["kakao_account"]["age_range"],
+    #         gender=kakao_user["kakao_account"]["gender"],
+    #         profile_image=kakao_user["kakao_account"]["profile"]["profile_image_url"],
+    #         thumbnail_image=kakao_user["kakao_account"]["profile"]["thumbnail_image_url"],
+    #         access_token=accept_json["access_token"],
+    #         refresh_token=accept_json["refresh_token"],
+    #     )
+
     return JsonResponse(accept_json)
 
 

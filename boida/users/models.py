@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -30,6 +31,17 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
+    platform_type = models.CharField(max_length=25, blank=False)
+    platform_id = models.CharField(max_length=255,blank=True, null=True, default="")
+    nickname = models.CharField(max_length=25, blank=True, null=True, default="")
+    age_range = models.CharField(max_length=25, blank=True, null=True, default="")
+    gender = models.CharField(max_length=6, blank=True, null=True, default="")
+    profile_image = models.TextField(default="")
+    thumbnail_image = models.TextField(default="")
+    access_token = models.TextField(default="")
+    refresh_token = models.TextField(default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -38,6 +50,9 @@ class User(AbstractUser):
 
     spouse_name = models.CharField(blank=True, max_length=100)
     date_of_birth = models.DateField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'user'
 
     def __str__(self):
         return self.email

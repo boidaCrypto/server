@@ -16,35 +16,48 @@ import requests as req
 from rest_framework import status
 from json.decoder import JSONDecodeError
 
-rest_api_key = "415f1aec476684d25a44afce51a98d2f"
+CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
+CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
 KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
 # KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
 
 
 def kakao_login(request):
+    # 카카오 로그인을 누르면, redirect된다.
     return redirect(
-        f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code"
+        f"https://kauth.kakao.com/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code"
     )
 
 
 def kakao_callback(request):
+    # code를 받아서, access token을 제공받는다.
     code = request.GET.get("code")
-    print("code-------------------------", code)
-    redirect_uri = KAKAO_CALLBACK_URI
-    token_req = req.get(
-        f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
+    token_req = req.post(
+        url="https://kauth.kakao.com/oauth/token",
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-cache",
+        },
+        data={
+            "grant_type": "authorization_code",
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+            "redirect_uri": KAKAO_CALLBACK_URI,
+            "code": code,
+        },
     )
-
     token_req_json = token_req.json()
     error = token_req_json.get("error")
     if error is not None:
         raise JSONDecodeError(error)
-
+    # 제공받은 access token
     access_token = token_req_json.get("access_token")
+
+    # 유저정보 얻기
     headers = ({'Authorization': f"Bearer {access_token}"})
     user_profile_info_uri = 'https://kapi.kakao.com/v2/user/me'
-    user_profile_info = req.get(user_profile_info_uri, headers=headers)
+    user_profile_info = req.post(user_profile_info_uri, headers=headers)
     json_data = user_profile_info.json()
     print(json_data)
 

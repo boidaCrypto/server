@@ -19,8 +19,8 @@ from users.models import User
 
 CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
 CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
-KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
-# KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
+# KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
+KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
 
 
@@ -43,7 +43,7 @@ def kakao_callback(request):
         data={
             "grant_type": "authorization_code",
             "client_id": CLIENT_ID,
-            # "client_secret": CLIENT_SECRET,
+            "client_secret": CLIENT_SECRET,
             "redirect_uri": KAKAO_CALLBACK_URI,
             "code": code,
         },
@@ -67,19 +67,29 @@ def kakao_callback(request):
     accept = req.post(
         f"{BASE_URL}users/kakao/login/finish/", data=data)
     accept_status = accept.status_code
+    print("accept_status : ", accept_status)
     if accept_status != 200:
         return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
     accept_json = accept.json()
     accept_json.pop('user', None)
 
-    # # 해당 이메일로 가입한 유저가 있는지 확인
-    # try :
-    #     user = User.objects.get(email = kakao_user["kakao_account"]["email"])
+    return JsonResponse(accept_json)
+
+
+class KakaoLogin(SocialLoginView):
+    adapter_class = kakao_view.KakaoOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = KAKAO_CALLBACK_URI
+
+
+    # # 해당 이메일로 가입한 유저가 있는지 확인, 추후 get_or_create로 가능한지 확인.
+    # try:
+    #     user = User.objects.get(email=kakao_user["kakao_account"]["email"])
     # except User.DoesNotExist:
     #     print("회원가입된 이메일이 없어 회원가입을 진행합니다.")
-    #     User.objects.create(
-    #         email = kakao_user["kakao_account"]["email"],
-    #         platform_type= "kakao" ,
+    #     user_create = User.objects.create(
+    #         email=kakao_user["kakao_account"]["email"],
+    #         platform_type="kakao",
     #         platform_id=kakao_user["id"],
     #         nickname=kakao_user["kakao_account"]["profile"]["nickname"],
     #         age_range=kakao_user["kakao_account"]["age_range"],
@@ -89,11 +99,4 @@ def kakao_callback(request):
     #         access_token=accept_json["access_token"],
     #         refresh_token=accept_json["refresh_token"],
     #     )
-
-    return JsonResponse(accept_json)
-
-
-class KakaoLogin(SocialLoginView):
-    adapter_class = kakao_view.KakaoOAuth2Adapter
-    client_class = OAuth2Client
-    callback_url = KAKAO_CALLBACK_URI
+    #     user_create.save()

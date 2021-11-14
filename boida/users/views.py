@@ -35,6 +35,7 @@ def kakao_login(request):
 def kakao_callback(request):
     # code를 받아서, access token을 제공받는다.
     code = request.GET.get("code")
+    print("==========code : ", code)
     token_req = req.post(
         url="https://kauth.kakao.com/oauth/token",
         headers={

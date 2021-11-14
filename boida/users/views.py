@@ -55,6 +55,21 @@ def kakao_callback(request):
     error = token_req_json.get("error")
     if error is not None:
         raise JSONDecodeError(error)
+    token_req2 = req.post(
+        url="https://kauth.kakao.com/oauth/token",
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-cache",
+        },
+        data={
+            "grant_type": "authorization_code",
+            "client_id": CLIENT_ID,
+            # "client_secret": CLIENT_SECRET,
+            "redirect_uri": KAKAO_CALLBACK_URI,
+            "code": code,
+        },
+    )
+    print("ddd:", token_req2)
     # 제공받은 access token
     access_token = token_req_json.get("access_token")
 
@@ -88,7 +103,7 @@ def kakao_callback(request):
     user_info = UserSerializer(user)
     data = {
         "msg": "200 이미 가입된 회원입니다.",
-        "user" : user_info.data
+        "user": user_info.data
     }
     return JsonResponse(data, status=status.HTTP_201_CREATED)
 
@@ -98,8 +113,6 @@ class KakaoLogin(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
     client_class = OAuth2Client
     callback_url = KAKAO_CALLBACK_URI
-
-
 
     # data = {'access_token': access_token, 'code': code}
     # print("data : ", data)

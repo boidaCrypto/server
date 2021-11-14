@@ -47,7 +47,7 @@ def ConnectingExchange(requests, format=None):
     # API에 이상이없으면, 동기화 진행(현재는 정적으로 데이터 동기화 진행하고, 추후 비동기처리 진행하기.)
 
     # 비동기 처리 파트
-    test_asyncio()
+    test_asyncio.delay()
 
     data = {
         "msg": "correct API key",

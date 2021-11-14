@@ -20,8 +20,8 @@ from users.models import User
 
 CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
 CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
-# KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
-KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
+KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
+# KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
 
 

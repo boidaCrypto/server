@@ -51,6 +51,7 @@ def kakao_callback(request):
         },
     )
     token_req_json = token_req.json()
+    print("token_req_json : ", token_req_json)
     error = token_req_json.get("error")
     if error is not None:
         raise JSONDecodeError(error)

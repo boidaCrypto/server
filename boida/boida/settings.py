@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'my',
     'notification',
     'transaction',
+    'exchange',
 
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',

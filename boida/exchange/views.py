@@ -35,9 +35,9 @@ def ConnectedExchangeList(requests, pk, format=None):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def ConnectingExchange(requests, format=None):
+def ConnectingExchange(request, format=None):
     # API KEY 이상 결과 전달.
-    test = api_test(requests.data["access_key"], requests.data["secret_key"])
+    test = api_test(request.data["access_key"], request.data["secret_key"])
     if test == 401:
         data = {
             "msg": "wrong API key",
@@ -46,7 +46,7 @@ def ConnectingExchange(requests, format=None):
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
     # 유저의 거래내역 연동을 위한 비동기 처리 파트
-    exchange_synchronization.delay(requests)
+    exchange_synchronization.delay(request)
 
     data = {
         "msg": "correct API key",

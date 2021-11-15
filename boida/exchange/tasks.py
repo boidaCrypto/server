@@ -60,8 +60,7 @@ def exchange_synchronization(request_data):
     user = Exchange.objects.create(user=user, exchange_type=request_data["exchange_type"],
                                    access_key=request_data["access_key"],
                                    secret_key=request_data["secret_key"])
-    exchange = user.save()
-    print(exchange, "------------------------------")
+    user.save()
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []
@@ -76,6 +75,8 @@ def exchange_synchronization(request_data):
     invoice_data = pd.json_normalize(a)
     print(invoice_data.shape, "-------------------------------------")
 
+    exchange = Exchange.objects.get(user=user)
+    print(exchange, "--------------------------------------------")
     # DB 저장
     Upbit.objects.bulk_create(exchange=exchange,
                               uuid=invoice_data["uuid"],

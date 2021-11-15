@@ -1,3 +1,4 @@
+import pymysql
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -5,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from users.models import User
-from exchange.models import Exchange
+from exchange.models import Exchange, Upbit
 from exchange.serializers import APISerializer
 
 import jwt
@@ -13,8 +14,13 @@ import uuid
 import hashlib
 from urllib.parse import urlencode
 import requests
+import csv
+import pandas as pd
+from sqlalchemy import create_engine
+import MySQLdb
 
 from exchange.tasks import exchange_synchronization
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -45,8 +51,39 @@ def ConnectingExchange(request, format=None):
         }
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
-    # 유저의 거래내역 연동을 위한 비동기 처리 파트
-    exchange_synchronization.delay(request.data)
+    # # 유저의 거래내역 연동을 위한 비동기 처리 파트
+    # exchange_synchronization.delay(request.data)
+    # 그냥 여기에 코드 작성하고, 비동기로 넘어가기.
+    # ---------------------------------------------------------------
+    user = User.objects.get(id=request.data["user"])
+    exchange = Exchange.objects.create(user=user, exchange_type=request.data["exchange_type"],
+                                       access_key=request.data["access_key"],
+                                       secret_key=request.data["secret_key"])
+    exchange.save()
+
+    # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
+    a = []
+    for page_num in range(1, 100000000000000000):
+        data = get_transaction(page_num, request.data["access_key"], request.data["secret_key"])
+        if data == None:
+            break
+        a = a + data
+
+    # 수집된 json 정보 dataframe화
+    invoice_data = pd.json_normalize(a)
+    exchange = Exchange.objects.get(user=user)
+    invoice_data["exchange_id"] = exchange.id
+
+    pymysql.install_as_MySQLdb()
+    engine = create_engine("mysql+mysqldb://admin:"+"admin1234"+"@boida.cpnbrmzhyf3q.ap-northeast-2.rds.amazonaws.com/boida", encoding='utf-8')
+    conn = engine.connect()
+    conn.execute("SET foreign_key_checks = 0;")
+    invoice_data.to_sql(name='exchange_upbit', con=conn, if_exists='append', index=False)
+    conn.close()
+
+
+
+    # ---------------------------------------------------------------
 
     data = {
         "msg": "correct API key",
@@ -79,3 +116,61 @@ def api_test(ACCESS_KEY, SECRET_KEY):
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)
     return res.status_code
+
+
+def get_transaction(page_num, access_key, secret_key):
+    ORDER_LIST_API = "https://api.upbit.com/v1/orders"
+    query = {
+        'state': 'done',  # 전체 체결 완료된 거래내역 수집
+        'page': page_num
+    }
+    query_string = urlencode(query).encode()
+
+    m = hashlib.sha512()
+    m.update(query_string)
+    query_hash = m.hexdigest()
+
+    payload = {
+        'access_key': access_key,
+        'nonce': str(uuid.uuid4()),
+        'query_hash': query_hash,
+        'query_hash_alg': 'SHA512',
+    }
+
+    jwt_token = jwt.encode(payload, secret_key)
+    authorize_token = 'Bearer {}'.format(jwt_token)
+    headers = {"Authorization": authorize_token}
+    res = requests.get(ORDER_LIST_API, query, headers=headers)
+
+    data = res.json()
+    if data == []:
+        data = None
+    return data
+
+
+
+    # bulk_list = list()
+    # for i in range(invoice_data.shape[0]):
+    #     print(i)
+    #     bulk_list.append(
+    #         Upbit(
+    #             exchange=exchange,
+    #             uuid=invoice_data["uuid"][i],
+    #             side=invoice_data["side"][i],
+    #             ord_type=invoice_data["ord_type"][i],
+    #             price=invoice_data["price"][i],
+    #             state=invoice_data["state"][i],
+    #             market=invoice_data["market"][i],
+    #             volume=invoice_data["volume"][i],
+    #             remaining_volume=invoice_data["remaining_volume"][i],
+    #             reserved_fee=invoice_data["reserved_fee"][i],
+    #             remaining_fee=invoice_data["remaining_fee"][i],
+    #             paid_fee=invoice_data["paid_fee"][i],
+    #             locked=invoice_data["locked"][i],
+    #             executed_volume=invoice_data["executed_volume"][i],
+    #             trades_count=invoice_data["trades_count"][i],
+    #             created_at=invoice_data["created_at"][i]
+    #         )
+    #     )
+    #
+    # Upbit.objects.bulk_create(bulk_list)

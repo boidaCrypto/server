@@ -58,7 +58,7 @@ def exchange_synchronization(request_data):
     print(request_data['user'])
     user = User.objects.get(id=request_data["user"])
     user = Exchange.objects.create(user=user, exchange_type=request_data["exchange_type"],
-                                   api_key=request_data["access_key"],
+                                   access_key=request_data["access_key"],
                                    secret_key=request_data["secret_key"])
     exchange = user.save()
 

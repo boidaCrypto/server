@@ -78,7 +78,7 @@ def exchange_synchronization(request_data):
     Upbit.objects.bulk_create(exchange=exchange,
                               uuid=invoice_data["uuid"],
                               side=invoice_data["side"],
-                              order_type=invoice_data["order_type"],
+                              ord_type=invoice_data["ord_type"],
                               price=invoice_data["price"],
                               state=invoice_data["state"],
                               market=invoice_data["market"],

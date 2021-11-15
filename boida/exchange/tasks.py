@@ -58,8 +58,8 @@ def exchange_synchronization(request_data):
     print(request_data['user'])
     user = User.objects.get(id=request_data["user"])
     exchange = Exchange.objects.create(user=user, exchange_type=request_data["exchange_type"],
-                                   access_key=request_data["access_key"],
-                                   secret_key=request_data["secret_key"])
+                                       access_key=request_data["access_key"],
+                                       secret_key=request_data["secret_key"])
     exchange.save()
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
@@ -78,22 +78,24 @@ def exchange_synchronization(request_data):
     exchange = Exchange.objects.get(user=user)
     print(exchange, "--------------------------------------------")
     # DB 저장
-    Upbit.objects.bulk_create(exchange=exchange,
-                              uuid=invoice_data["uuid"],
-                              side=invoice_data["side"],
-                              ord_type=invoice_data["ord_type"],
-                              price=invoice_data["price"],
-                              state=invoice_data["state"],
-                              market=invoice_data["market"],
-                              volume=invoice_data["volume"],
-                              remaining_volume=invoice_data["remaining_volume"],
-                              reserved_fee=invoice_data["reserved_fee"],
-                              remaining_fee=invoice_data["remaining_fee"],
-                              paid_fee=invoice_data["paid_fee"],
-                              locked=invoice_data["locked"],
-                              executed_volume=invoice_data["executed_volume"],
-                              trades_count=invoice_data["trades_count"],
-                              created_at=invoice_data["created_at"]
-                              )
+
+    bulk_list = [Upbit(exchange=exchange,
+                       uuid=invoice_data["uuid"],
+                       side=invoice_data["side"],
+                       ord_type=invoice_data["ord_type"],
+                       price=invoice_data["price"],
+                       state=invoice_data["state"],
+                       market=invoice_data["market"],
+                       volume=invoice_data["volume"],
+                       remaining_volume=invoice_data["remaining_volume"],
+                       reserved_fee=invoice_data["reserved_fee"],
+                       remaining_fee=invoice_data["remaining_fee"],
+                       paid_fee=invoice_data["paid_fee"],
+                       locked=invoice_data["locked"],
+                       executed_volume=invoice_data["executed_volume"],
+                       trades_count=invoice_data["trades_count"],
+                       created_at=invoice_data["created_at"])]
+
+    Upbit.objects.bulk_create(bulk_list)
 
     return None

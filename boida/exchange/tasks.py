@@ -50,7 +50,7 @@ def exchange_synchronization(ACCESS_KEY, SECRET_KEY):
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []
     for page_num in range(1, 100000000000000000):
-        data = get_transaction(page_num)
+        data = get_transaction(page_num, ACCESS_KEY, SECRET_KEY)
         # data가 없을경우 중지
         if data == None:
             break

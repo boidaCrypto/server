@@ -7,7 +7,7 @@ from users.models import User
 class Exchange(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     exchange_type = models.CharField(max_length=10, blank=False)
-    api_key = models.TextField(default='')
+    access_key = models.TextField(default='')
     secret_key = models.TextField(default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -18,7 +18,6 @@ class Exchange(models.Model):
 
 
 class Upbit(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     exchange = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
     uuid = models.CharField(max_length=40, null=False, default="")
     side = models.CharField(max_length=3, null=False, default="")

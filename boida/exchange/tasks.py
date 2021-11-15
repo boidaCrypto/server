@@ -89,7 +89,7 @@ def exchange_synchronization(request_data):
                               paid_fee=invoice_data["paid_fee"],
                               locked=invoice_data["locked"],
                               executed_volume=invoice_data["executed_volume"],
-                              trade_count=invoice_data["trade_count"],
+                              trades_count=invoice_data["trades_count"],
                               created_at=invoice_data["created_at"]
                               )
 

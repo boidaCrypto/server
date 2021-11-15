@@ -74,6 +74,7 @@ def exchange_synchronization(request_data):
         a = a + data
     # 수집된 json 정보 dataframe화
     invoice_data = pd.json_normalize(a)
+    print(invoice_data.shape, "-------------------------------------")
 
     # DB 저장
     Upbit.objects.bulk_create(exchange=exchange,

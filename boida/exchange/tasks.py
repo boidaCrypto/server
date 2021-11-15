@@ -61,6 +61,7 @@ def exchange_synchronization(request_data):
                                    access_key=request_data["access_key"],
                                    secret_key=request_data["secret_key"])
     exchange = user.save()
+    print(exchange, "------------------------------")
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []

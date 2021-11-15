@@ -46,7 +46,7 @@ def ConnectingExchange(request, format=None):
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
     # 유저의 거래내역 연동을 위한 비동기 처리 파트
-    exchange_synchronization.delay(request)
+    exchange_synchronization.delay(request.data)
 
     data = {
         "msg": "correct API key",

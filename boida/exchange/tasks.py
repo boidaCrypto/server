@@ -1,7 +1,7 @@
 from celery import shared_task
 
 @shared_task
-def test_asyncio():
-    for i in range(1000000):
-        print(i)
+def exchange_synchronization(ACCESS_KEY, SECRET_KEY):
+    print(ACCESS_KEY, SECRET_KEY)
+
     return None

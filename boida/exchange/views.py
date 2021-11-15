@@ -14,7 +14,7 @@ import hashlib
 from urllib.parse import urlencode
 import requests
 
-from exchange.tasks import test_asyncio
+from exchange.tasks import exchange_synchronization
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -44,10 +44,9 @@ def ConnectingExchange(requests, format=None):
             "exchange_throw_status": "401"
         }
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
-    # API에 이상이없으면, 동기화 진행(현재는 정적으로 데이터 동기화 진행하고, 추후 비동기처리 진행하기.)
 
-    # 비동기 처리 파트
-    test_asyncio.delay()
+    # 유저의 거래내역 연동을 위한 비동기 처리 파트
+    exchange_synchronization.delay(requests.data["api_key"], requests.data["secret_key"])
 
     data = {
         "msg": "correct API key",

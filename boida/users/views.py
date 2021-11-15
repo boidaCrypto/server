@@ -18,7 +18,8 @@ from rest_framework import status
 from json.decoder import JSONDecodeError
 from users.models import User
 
-CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
+# CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
+CLIENT_ID = "8cc0090ed13879fe61ac71d4557513e3"
 CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
 KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
 # KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
@@ -55,21 +56,7 @@ def kakao_callback(request):
     error = token_req_json.get("error")
     if error is not None:
         raise JSONDecodeError(error)
-    token_req2 = req.post(
-        url="https://kauth.kakao.com/oauth/token",
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Cache-Control": "no-cache",
-        },
-        data={
-            "grant_type": "authorization_code",
-            "client_id": CLIENT_ID,
-            # "client_secret": CLIENT_SECRET,
-            "redirect_uri": KAKAO_CALLBACK_URI,
-            "code": code,
-        },
-    )
-    print("ddd:", token_req2)
+
     # 제공받은 access token
     access_token = token_req_json.get("access_token")
 

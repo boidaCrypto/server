@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from users.models import User
-from exchange.models import exchange
+from exchange.models import Exchange
 from exchange.serializers import APISerializer
 
 import jwt
@@ -20,7 +20,7 @@ from exchange.tasks import exchange_synchronization
 @permission_classes([AllowAny])
 def ConnectedExchangeList(requests, pk, format=None):
     user = User.objects.get(id=pk)
-    user_exchange = exchange.objects.filter(user=user, is_deleted=False)
+    user_exchange = Exchange.objects.filter(user=user, is_deleted=False)
     # 유저가 연결한 거래소가 없을 때
     if list(user_exchange) == []:
         user_exchange_info = []

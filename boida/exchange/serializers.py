@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from users.models import User
-from exchange.models import exchange
+from exchange.models import Exchange
 
 
 class APISerializer(serializers.ModelSerializer):
     class Meta:
-        model = exchange
+        model = Exchange
         fields = '__all__'

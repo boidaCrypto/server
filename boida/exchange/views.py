@@ -37,7 +37,7 @@ def ConnectedExchangeList(requests, pk, format=None):
 @permission_classes([AllowAny])
 def ConnectingExchange(requests, format=None):
     # API KEY 이상 결과 전달.
-    test = api_test(requests.data["api_key"], requests.data["secret_key"])
+    test = api_test(requests.data["access_key"], requests.data["secret_key"])
     if test == 401:
         data = {
             "msg": "wrong API key",

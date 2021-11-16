@@ -16,8 +16,8 @@ from sqlalchemy import create_engine
 import pymysql
 import MySQLdb
 
-from exchange.models import Upbit, Exchange
 from users.models import User
+from exchange.models import Exchange, Upbit
 
 # 주문 리스트 조회 API
 ORDER_LIST_API = "https://api.upbit.com/v1/orders"
@@ -54,48 +54,32 @@ def get_transaction(page_num, access_key, secret_key):
 
 @shared_task
 def exchange_synchronization(request_data):
-    #  Access_key, secret_key 저장
-    print(request_data['user'])
-    user = User.objects.get(id=request_data["user"])
-    exchange = Exchange.objects.create(user=user, exchange_type=request_data["exchange_type"],
-                                       access_key=request_data["access_key"],
-                                       secret_key=request_data["secret_key"])
+    user = User.objects.get(id=request_data.data["user"])
+    exchange = Exchange.objects.create(user=user, exchange_type=request_data.data["exchange_type"],
+                                       access_key=request_data.data["access_key"],
+                                       secret_key=request_data.data["secret_key"])
     exchange.save()
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []
     for page_num in range(1, 100000000000000000):
-        data = get_transaction(page_num, request_data["access_key"], request_data["secret_key"])
-        # data가 없을경우 중지
+        data = get_transaction(page_num, request_data.data["access_key"], request_data.data["secret_key"])
         if data == None:
             break
-        # json 스택
         a = a + data
+
     # 수집된 json 정보 dataframe화
     invoice_data = pd.json_normalize(a)
-
-
     exchange = Exchange.objects.get(user=user)
-    print(exchange, "--------------------------------------------")
-    # DB 저장
+    invoice_data["exchange_id"] = exchange.id
 
-    bulk_list = [Upbit(exchange=exchange,
-                       uuid=invoice_data["uuid"],
-                       side=invoice_data["side"],
-                       ord_type=invoice_data["ord_type"],
-                       price=invoice_data["price"],
-                       state=invoice_data["state"],
-                       market=invoice_data["market"],
-                       volume=invoice_data["volume"],
-                       remaining_volume=invoice_data["remaining_volume"],
-                       reserved_fee=invoice_data["reserved_fee"],
-                       remaining_fee=invoice_data["remaining_fee"],
-                       paid_fee=invoice_data["paid_fee"],
-                       locked=invoice_data["locked"],
-                       executed_volume=invoice_data["executed_volume"],
-                       trades_count=invoice_data["trades_count"],
-                       created_at=invoice_data["created_at"])]
-
-    Upbit.objects.bulk_create(bulk_list)
+    pymysql.install_as_MySQLdb()
+    engine = create_engine(
+        "mysql+mysqldb://admin:" + "admin1234" + "@boida.cpnbrmzhyf3q.ap-northeast-2.rds.amazonaws.com/boida",
+        encoding='utf-8')
+    conn = engine.connect()
+    conn.execute("SET foreign_key_checks = 0;")
+    invoice_data.to_sql(name='exchange_upbit', con=conn, if_exists='append', index=False)
+    conn.close()
 
     return None

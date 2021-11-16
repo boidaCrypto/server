@@ -54,16 +54,16 @@ def get_transaction(page_num, access_key, secret_key):
 
 @shared_task
 def exchange_synchronization(request_data):
-    user = User.objects.get(id=request_data.data["user"])
-    exchange = Exchange.objects.create(user=user, exchange_type=request_data.data["exchange_type"],
-                                       access_key=request_data.data["access_key"],
-                                       secret_key=request_data.data["secret_key"])
+    user = User.objects.get(id=request_data["user"])
+    exchange = Exchange.objects.create(user=user, exchange_type=request_data["exchange_type"],
+                                       access_key=request_data["access_key"],
+                                       secret_key=request_data["secret_key"])
     exchange.save()
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []
     for page_num in range(1, 100000000000000000):
-        data = get_transaction(page_num, request_data.data["access_key"], request_data.data["secret_key"])
+        data = get_transaction(page_num, request_data["access_key"], request_data["secret_key"])
         if data == None:
             break
         a = a + data

@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'notification',
     'transaction',
     'exchange',
-
+    
+    'storages',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'dj_rest_auth',
@@ -99,8 +100,8 @@ DATABASES = {
         'HOST': 'boida.cpnbrmzhyf3q.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
         'OPTIONS': {
-            # 'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
-            "init_command": "SET foreign_key_checks = 0;"
+            'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
+            # "init_command": "SET foreign_key_checks = 0;"
         }
     }
 }
@@ -138,60 +139,42 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+import os
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --------------------------------Custom--------------------------------
-# DRF 설정
-# REST_FRAMEWORK = {
-#     # 기본 PERMISSIONS를 어떻게 줄것인지.
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-#     # Authentication 설정
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.BasicAuthentication',
-#     ],
-#     # API의 결과를 어떤 형태로 전달하는가 - Json
-#     'DEFAULT_RENDERER_CLASSES': [
-#         'rest_framework.renderers.JSONRenderer',
-#     ],
-#     # 요청받을 때 body 형태에 대한 설정
-#     'DEFAULT_PARSER_CLASSES': [
-#         'rest_framework.parsers.JSONParser',
-#         'rest_framework.parsers.FormParser',
-#         'rest_framework.parsers.MultiPartParser'
-#     ]
-# }
 
 
 # AWS S3 설정
-STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-import os
 
-MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
 
 # 미디어파일 S3 연동
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = 'AKIARZNCNJPLL445S4HQ'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'boida'
-AWS_QUERYSTRING_AUTH = False
 
-AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_ACCESS_KEY_ID = 'AKIARZNCNJPLGWSFJJG7'
+AWS_SECRET_ACCESS_KEY = '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'
 AWS_S3_REGION_NAME = 'ap-northeast-2'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERIFY = True
+AWS_REGION = 'ap-northeast-2'
+
+AWS_STORAGE_BUCKET_NAME = 'boida'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_REGION)
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
+
+# AWS_QUERYSTRING_AUTH = False
+#
+# AWS_S3_SIGNATURE_VERSION = 's3v4'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_VERIFY = True
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

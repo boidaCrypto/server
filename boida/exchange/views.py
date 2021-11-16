@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from users.models import User
-from exchange.models import Exchange, Upbit
+from exchange.models import ConnectedExchange, Transaction
 from exchange.serializers import APISerializer
 
 import jwt

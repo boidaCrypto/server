@@ -18,8 +18,8 @@ from rest_framework import status
 from json.decoder import JSONDecodeError
 from users.models import User
 
-# CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
-CLIENT_ID = "8cc0090ed13879fe61ac71d4557513e3"
+CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
+# CLIENT_ID = "8cc0090ed13879fe61ac71d4557513e3"
 CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
 KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
 # KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"

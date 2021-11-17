@@ -38,6 +38,7 @@ def kakao_login(request, format=None):
     user_profile_info_uri = 'https://kapi.kakao.com/v2/user/me'
     user_profile_info = req.post(user_profile_info_uri, headers=headers)
     kakao_user = user_profile_info.json()
+    print(kakao_user)
     # 해당 이메일로 가입한 유저가 있는지 확인, 추후 get_or_create로 가능한지 확인.
     try:
         user = User.objects.get(email=kakao_user["kakao_account"]["email"])

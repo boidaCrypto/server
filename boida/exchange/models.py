@@ -2,11 +2,11 @@ from django.db import models
 from users.models import User
 import os, datetime
 
-
 LOCATION_CHOICES = (
     ('domestic', 'Domestic'),
     ('aboard', 'Aboard')
 )
+
 
 def set_filename_format(now, instance, filename):
     return "{exchange_name}-{date}-{microsecond}{extension}".format(
@@ -19,9 +19,27 @@ def set_filename_format(now, instance, filename):
 
 def exchange_directory_path(instance, filename):
     now = datetime.datetime.now()
-    path = "exchange/image/{exchange_name}/{filename}".format(
+    path = "exchange/image/{exchange_name}/logo/{filename}".format(
         exchange_name=instance.exchange_name,
         filename=set_filename_format(now, instance, filename),
+    )
+    return path
+
+
+def exchange_description_set_filename_format(now, filename):
+    return "{date}-{microsecond}{extension}".format(
+        date=str(now.date()),
+        microsecond=now.microsecond,
+        extension=os.path.splitext(filename)[1],
+    )
+
+
+def exchange_description_directory_path(instance, filename):
+    now = datetime.datetime.now()
+    exchange_name = instance.exchange.exchange_name
+    path = "exchange/image/{exchange_name}/explain/{filename}".format(
+        exchange_name=exchange_name,
+        filename=exchange_description_set_filename_format(now, filename)
     )
     return path
 
@@ -75,3 +93,9 @@ class Transaction(models.Model):
 
     class Meta:
         db_table = 'transaction'
+
+
+class ExchangeDescription(models.Model):
+    exchange = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
+    description = models.TextField(default="")
+    image = models.ImageField(upload_to=exchange_description_directory_path)

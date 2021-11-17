@@ -3,6 +3,11 @@ from users.models import User
 import os, datetime
 
 
+LOCATION_CHOICES = (
+    ('domestic', 'Domestic'),
+    ('aboard', 'Aboard')
+)
+
 def set_filename_format(now, instance, filename):
     return "{exchange_type}-{date}-{microsecond}{extension}".format(
         exchange_type=instance.exchange_type,
@@ -23,12 +28,18 @@ def exchange_directory_path(instance, filename):
 
 # Create your models here.
 class Exchange(models.Model):
-    exchange_type = models.CharField(max_length=10, blank=False)
+    exchange_name = models.CharField(max_length=10, blank=False)
     exchange_image = models.FileField(upload_to=exchange_directory_path, null=False, default="")
-    # exchange_image = models.FileField()
+    location = models.CharField(max_length=8, choices=LOCATION_CHOICES)
+    is_available = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'exchange'
+
+    def __str__(self):
+        return self.exchange_name
 
 
 class ConnectedExchange(models.Model):

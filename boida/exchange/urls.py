@@ -5,5 +5,6 @@ from exchange import views
 
 urlpatterns = [
     path('connected-exchange/<int:pk>', views.ConnectedExchangeList),
-    path('connecting_exchange', views.ConnectingExchange)
+    path('connecting-exchange', views.ConnectingExchange),
+    path('list-exchange/<int:pk>', views.ListExchange),
     ]

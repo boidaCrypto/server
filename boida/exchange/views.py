@@ -7,7 +7,7 @@ from rest_framework import status
 
 from users.models import User
 from exchange.models import ConnectedExchange, Transaction, Exchange
-from exchange.serializers import APISerializer
+from exchange.serializers import ConnectedExchangeSerializer, ExchangeSerializer, ListExchangeSerializer
 
 import jwt
 import uuid
@@ -31,12 +31,35 @@ def ConnectedExchangeList(requests, pk, format=None):
     if list(user_exchange) == []:
         user_exchange_info = []
         return Response(user_exchange_info, status=status.HTTP_204_NO_CONTENT)
-    # 유저가 연결한 거래소가 있을 때(추후 개발)
+    # 유저가 연결한 거래소가 있을 때,
     else:
-        user_exchange_info = {
-            "성공": "성공"
+        connected_exchange = ConnectedExchangeSerializer(user_exchange, many=True)
+
+        response = {
+            "connected_exchange": connected_exchange.data
         }
-        return Response(status=status.HTTP_200_OK)
+        return Response(response, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def ListExchange(request, pk, format=None):
+
+
+    # 현재 연동 가능한 국내 거래소 가져오기 + 사용자의 연결된 거래소인지 정보 추가하기
+    domestic_exchange = Exchange.objects.filter(is_available=True, location="domestic")
+    domestic_exchange = ListExchangeSerializer(domestic_exchange, many=True, context={"user": pk})
+
+    # 현재 연동 가능한 해외 거래소 가져오기 + 사용자의 연결된 거래소인지 정보 추가하기
+    aboard_exchange = Exchange.objects.filter(is_available=True, location="aboard")
+    aboard_exchange = ListExchangeSerializer(aboard_exchange, many=True, context={"user": pk})
+
+    data = {
+        "domestic": domestic_exchange.data,
+        "aboard": aboard_exchange.data
+    }
+
+    return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

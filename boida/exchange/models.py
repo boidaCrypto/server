@@ -24,7 +24,7 @@ def exchange_directory_path(instance, filename):
 # Create your models here.
 class Exchange(models.Model):
     exchange_type = models.CharField(max_length=10, blank=False)
-    exchange_image = models.FileField(upload_to="uploads/%Y/%m/%d/", null=False, default="")
+    exchange_image = models.FileField(upload_to=exchange_directory_path, null=False, default="")
     # exchange_image = models.FileField()
 
     class Meta:

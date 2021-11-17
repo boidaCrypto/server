@@ -17,7 +17,7 @@ import pymysql
 import MySQLdb
 
 from users.models import User
-from exchange.models import ConnectedExchange, Transaction
+from exchange.models import ConnectedExchange, Transaction, Exchange
 
 # 주문 리스트 조회 API
 ORDER_LIST_API = "https://api.upbit.com/v1/orders"
@@ -55,11 +55,12 @@ def get_transaction(page_num, access_key, secret_key):
 @shared_task
 def exchange_synchronization(request_data):
     user = User.objects.get(id=request_data["user"])
+    exchange = Exchange.objects.get(exchange_type=request_data["exchange_type"])
     print(user, "user-------------------")
-    exchange = ConnectedExchange.objects.create(user=user, exchange_type=request_data["exchange_type"],
-                                                access_key=request_data["access_key"],
-                                                secret_key=request_data["secret_key"])
-    exchange.save()
+    connect_exchange = ConnectedExchange.objects.create(user=user, exchange=exchange,
+                                                        access_key=request_data["access_key"],
+                                                        secret_key=request_data["secret_key"])
+    connect_exchange.save()
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []
@@ -71,8 +72,8 @@ def exchange_synchronization(request_data):
 
     # 수집된 json 정보 dataframe화
     invoice_data = pd.json_normalize(a)
-    exchange = ConnectedExchange.objects.get(user=user)
-    invoice_data["exchange_id"] = exchange.id
+    connect_exchange = ConnectedExchange.objects.get(user=user)
+    invoice_data["exchange_id"] = connect_exchange.id
 
     pymysql.install_as_MySQLdb()
     engine = create_engine(

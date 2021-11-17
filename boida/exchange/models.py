@@ -9,8 +9,8 @@ LOCATION_CHOICES = (
 )
 
 def set_filename_format(now, instance, filename):
-    return "{exchange_type}-{date}-{microsecond}{extension}".format(
-        exchange_type=instance.exchange_type,
+    return "{exchange_name}-{date}-{microsecond}{extension}".format(
+        exchange_name=instance.exchange_name,
         date=str(now.date()),
         microsecond=now.microsecond,
         extension=os.path.splitext(filename)[1],
@@ -19,8 +19,8 @@ def set_filename_format(now, instance, filename):
 
 def exchange_directory_path(instance, filename):
     now = datetime.datetime.now()
-    path = "exchange/image/{exchange_type}/{filename}".format(
-        exchange_type=instance.exchange_type,
+    path = "exchange/image/{exchange_name}/{filename}".format(
+        exchange_name=instance.exchange_name,
         filename=set_filename_format(now, instance, filename),
     )
     return path

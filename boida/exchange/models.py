@@ -61,3 +61,6 @@ class Transaction(models.Model):
     executed_volume = models.FloatField()
     trades_count = models.IntegerField()
     created_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'transaction'

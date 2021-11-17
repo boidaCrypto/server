@@ -81,7 +81,7 @@ def exchange_synchronization(request_data):
         encoding='utf-8')
     conn = engine.connect()
     conn.execute("SET foreign_key_checks = 0;")
-    invoice_data.to_sql(name='exchange_transaction', con=conn, if_exists='append', index=False)
+    invoice_data.to_sql(name='transaction', con=conn, if_exists='append', index=False)
     conn.close()
 
     return None

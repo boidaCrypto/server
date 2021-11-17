@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from users.models import User
-from exchange.models import ConnectedExchange, Transaction
+from exchange.models import ConnectedExchange, Transaction, Exchange
 from exchange.serializers import APISerializer
 
 import jwt
@@ -52,7 +52,6 @@ def ConnectingExchange(request, format=None):
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
     # # 유저의 거래내역 연동을 위한 비동기 처리 파트
-    # exchange_synchronization.delay(request.data)
     exchange_synchronization.delay(request.data)
 
     data = {
@@ -87,7 +86,6 @@ def api_test(ACCESS_KEY, SECRET_KEY):
     res = requests.get(test, query, headers=headers)
     return res.status_code
 
-
 # def get_transaction(page_num, access_key, secret_key):
 #     ORDER_LIST_API = "https://api.upbit.com/v1/orders"
 #     query = {
@@ -118,29 +116,36 @@ def api_test(ACCESS_KEY, SECRET_KEY):
 #     return data
 
 
-
-    # bulk_list = list()
-    # for i in range(invoice_data.shape[0]):
-    #     print(i)
-    #     bulk_list.append(
-    #         Upbit(
-    #             exchange=exchange,
-    #             uuid=invoice_data["uuid"][i],
-    #             side=invoice_data["side"][i],
-    #             ord_type=invoice_data["ord_type"][i],
-    #             price=invoice_data["price"][i],
-    #             state=invoice_data["state"][i],
-    #             market=invoice_data["market"][i],
-    #             volume=invoice_data["volume"][i],
-    #             remaining_volume=invoice_data["remaining_volume"][i],
-    #             reserved_fee=invoice_data["reserved_fee"][i],
-    #             remaining_fee=invoice_data["remaining_fee"][i],
-    #             paid_fee=invoice_data["paid_fee"][i],
-    #             locked=invoice_data["locked"][i],
-    #             executed_volume=invoice_data["executed_volume"][i],
-    #             trades_count=invoice_data["trades_count"][i],
-    #             created_at=invoice_data["created_at"][i]
-    #         )
-    #     )
-    #
-    # Upbit.objects.bulk_create(bulk_list)
+# # -----------------------------------------------------------------
+#
+# user = User.objects.get(id=request.data["user"])
+# exchange = Exchange.objects.get(exchange_type=request.data["exchange_type"])
+# print(user, "user-------------------")
+# connect_exchange = ConnectedExchange.objects.create(user=user, exchange=exchange,
+#                                                     access_key=request.data["access_key"],
+#                                                     secret_key=request.data["secret_key"])
+# connect_exchange.save()
+#
+# # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
+# a = []
+# for page_num in range(1, 100000000000000000):
+#     data = get_transaction(page_num, request.data["access_key"], request.data["secret_key"])
+#     if data == None:
+#         break
+#     a = a + data
+#
+# # 수집된 json 정보 dataframe화
+# invoice_data = pd.json_normalize(a)
+# connected_exchange = ConnectedExchange.objects.get(user=user)
+# invoice_data["connected_exchange_id"] = connected_exchange.id
+#
+# pymysql.install_as_MySQLdb()
+# engine = create_engine(
+#     "mysql+mysqldb://admin:" + "admin1234" + "@boida.cpnbrmzhyf3q.ap-northeast-2.rds.amazonaws.com/boida",
+#     encoding='utf-8')
+# conn = engine.connect()
+# conn.execute("SET foreign_key_checks = 0;")
+# invoice_data.to_sql(name='transaction', con=conn, if_exists='append', index=False)
+# conn.close()
+#
+# # -----------------------------------------------------------------

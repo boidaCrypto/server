@@ -72,8 +72,8 @@ def exchange_synchronization(request_data):
 
     # 수집된 json 정보 dataframe화
     invoice_data = pd.json_normalize(a)
-    connect_exchange = ConnectedExchange.objects.get(user=user)
-    invoice_data["exchange_id"] = connect_exchange.id
+    connected_exchange = ConnectedExchange.objects.get(user=user)
+    invoice_data["connected_exchange_id"] = connected_exchange.id
 
     pymysql.install_as_MySQLdb()
     engine = create_engine(

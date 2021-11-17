@@ -30,7 +30,7 @@ class ListExchangeSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         user = self.context.get("user")
-        connected_exchange = ConnectedExchange.objects.filter(user=user, exchange=instance)
+        connected_exchange = ConnectedExchange.objects.filter(user=user, exchange=instance, is_deleted=False)
         if list(connected_exchange) == []:
             response["is_connected"] = False
         else:

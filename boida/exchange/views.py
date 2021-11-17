@@ -62,6 +62,16 @@ def ListExchange(request, pk, format=None):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+def DeleteExchange(request, format=None):
+    connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"], pk=request.data["connected_exchange_id"])
+    print(connected_exchange)
+    connected_exchange.is_deleted = True
+    connected_exchange.save()
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def ConnectingExchange(request, format=None):
     # API KEY 이상 결과 전달.
     test = api_test(request.data["access_key"], request.data["secret_key"])

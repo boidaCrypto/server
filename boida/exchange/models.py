@@ -99,3 +99,7 @@ class ExchangeDescription(models.Model):
     exchange = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
     description = models.TextField(default="")
     image = models.ImageField(upload_to=exchange_description_directory_path)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        db_table = 'exchange_description'

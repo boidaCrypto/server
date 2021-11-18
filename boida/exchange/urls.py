@@ -8,4 +8,5 @@ urlpatterns = [
     path('connecting-exchange', views.ConnectingExchange),
     path('list-exchange/<int:pk>', views.ListExchange),
     path('delete-exchange', views.DeleteExchange),
+    path('list-exchange-description/<int:pk>', views.ListExchangeDescription),
     ]

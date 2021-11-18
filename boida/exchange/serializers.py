@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import User
-from exchange.models import Exchange, ConnectedExchange, Transaction
+from exchange.models import Exchange, ConnectedExchange, Transaction, ExchangeDescription
 
 
 class ExchangeSerializer(serializers.ModelSerializer):
@@ -37,3 +37,9 @@ class ListExchangeSerializer(serializers.ModelSerializer):
             response["is_connected"] = True
 
         return response
+
+
+class ListExchangeDescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExchangeDescription
+        fields = ('id', 'description', 'image')

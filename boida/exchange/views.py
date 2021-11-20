@@ -30,8 +30,11 @@ def ConnectedExchangeList(requests, pk, format=None):
     user_exchange = ConnectedExchange.objects.filter(user=user, is_deleted=False)
     # 유저가 연결한 거래소가 없을 때
     if list(user_exchange) == []:
-        user_exchange_info = []
-        return Response(user_exchange_info, status=status.HTTP_204_NO_CONTENT)
+        print("hear")
+        response = {
+            "connected_exchange": []
+        }
+        return Response(response, status=status.HTTP_200_OK)
     # 유저가 연결한 거래소가 있을 때,
     else:
         connected_exchange = ConnectedExchangeSerializer(user_exchange, many=True)
@@ -130,3 +133,31 @@ def ListExchangeDescription(request, pk, format=None):
     }
 
     return Response(data, status=status.HTTP_200_OK)
+
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+from firebase_admin import db
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+cred_path = os.path.join(BASE_DIR, "boida_firebase_admin.json")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def FirebaseTest(request, format=None):
+    db = firestore.client()
+    doc_ref = db.collection(u'total_exchange').document(u'c3OYgCZ7P2WS7OcO3xVE')
+    doc_ref.set({
+        u'level': 201,
+        u'money': 700,
+        u'job': "knight"
+    })
+
+
+    return Response(status=status.HTTP_200_OK)
+

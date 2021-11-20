@@ -9,4 +9,5 @@ urlpatterns = [
     path('list-exchange/<int:pk>', views.ListExchange),
     path('delete-exchange', views.DeleteExchange),
     path('list-exchange-description/<int:pk>', views.ListExchangeDescription),
+    path('firebase_test', views.FirebaseTest)
     ]

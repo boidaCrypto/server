@@ -25,7 +25,7 @@ class ListExchangeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exchange
-        fields = ('id', 'exchange_name', 'exchange_image', "is_connected")
+        fields = ('id', 'exchange_name', 'exchange_image', "has_qr", "is_connected")
 
     def to_representation(self, instance):
         response = super().to_representation(instance)

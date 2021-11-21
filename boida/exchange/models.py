@@ -50,6 +50,7 @@ class Exchange(models.Model):
     exchange_image = models.FileField(upload_to=exchange_directory_path, null=False, default="")
     location = models.CharField(max_length=8, choices=LOCATION_CHOICES)
     is_available = models.BooleanField(default=False)
+    has_qr = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -101,5 +102,6 @@ class ExchangeDescription(models.Model):
     image = models.ImageField(upload_to=exchange_description_directory_path)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = 'exchange_description'

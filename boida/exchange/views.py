@@ -147,16 +147,24 @@ cred_path = os.path.join(BASE_DIR, "boida_firebase_admin.json")
 cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
 
+
+from rest_framework_jwt.settings import api_settings
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def FirebaseTest(request, format=None):
-    db = firestore.client()
-    doc_ref = db.collection(u'total_exchange').document(u'c3OYgCZ7P2WS7OcO3xVE')
-    doc_ref.set({
-        u'level': 201,
-        u'money': 700,
-        u'job': "knight"
-    })
+    # db = firestore.client()
+    # doc_ref = db.collection(u'total_exchange').document(u'c3OYgCZ7P2WS7OcO3xVE')
+    # doc_ref.set({
+    #     u'level': 201,
+    #     u'money': 700,
+    #     u'job': "knight"
+    # })
+    JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+    JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
+    payload = JWT_PAYLOAD_HANDLER("gkgkkgkggkgk")
+    jwt_token = JWT_ENCODE_HANDLER(payload)
+    print(jwt_token)
 
 
     return Response(status=status.HTTP_200_OK)

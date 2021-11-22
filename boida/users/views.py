@@ -17,6 +17,7 @@ import requests as req
 from rest_framework import status
 from json.decoder import JSONDecodeError
 from users.models import User
+from rest_framework_jwt.settings import api_settings
 
 # CLIENT_ID = "415f1aec476684d25a44afce51a98d2f"
 CLIENT_ID = "31f8b74ba4ecfca1ff788f63b8a57c80"
@@ -24,6 +25,9 @@ CLIENT_SECRET = "EIvtcyd8SreXsawSGZM3yBXrafJ8frO2"
 KAKAO_CALLBACK_URI = "http://3.35.4.147:8000/users/kakao/callback/"
 # KAKAO_CALLBACK_URI = "http://localhost:8000/users/kakao/callback/"
 BASE_URL = 'http://localhost:8000/'
+
+JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 
 @api_view(['POST'])
@@ -39,7 +43,7 @@ def kakao_login(request, format=None):
     user_profile_info = req.post(user_profile_info_uri, headers=headers)
     kakao_user = user_profile_info.json()
     print(kakao_user)
-    # 해당 이메일로 가입한 유저가 있는지 확인, 추후 get_or_create로 가능한지 확인.
+
     try:
         user = User.objects.get(email=kakao_user["kakao_account"]["email"])
     except User.DoesNotExist:
@@ -59,6 +63,7 @@ def kakao_login(request, format=None):
         user_create.save()
         user = User.objects.get(email=kakao_user["kakao_account"]["email"])
         user = UserSerializer(user)
+
         data = {
             "msg": "가입되었습니다.",
             "user": user.data
@@ -71,27 +76,7 @@ def kakao_login(request, format=None):
         "msg": "200 이미 가입된 회원입니다.",
         "user": user_info.data
     }
-    return Response(data, status = status.HTTP_200_OK)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return Response(data, status=status.HTTP_200_OK)
 
 # def kakao_login(request):
 #     # 카카오 로그인을 누르면, redirect된다.

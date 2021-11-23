@@ -100,6 +100,7 @@ def ConnectingExchange(request, format=None):
     return Response(data, status=status.HTTP_200_OK)
 
 
+@permission_classes([AllowAny])
 def api_test(ACCESS_KEY, SECRET_KEY):
     print("Access_key : ", ACCESS_KEY)
     print("SECRET_KEY : ", SECRET_KEY)

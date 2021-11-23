@@ -78,6 +78,9 @@ def DeleteExchange(request, format=None):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def ConnectingExchange(request, format=None):
+
+    print("Access_key : ", request.data["access_key"])
+    print("SECRET_KEY : ", request.data["secret_key"])
     # API KEY 이상 결과 전달.
     test = api_test(request.data["access_key"], request.data["secret_key"])
     if test == 401:
@@ -98,6 +101,9 @@ def ConnectingExchange(request, format=None):
 
 
 def api_test(ACCESS_KEY, SECRET_KEY):
+    print("Access_key : ", ACCESS_KEY)
+    print("SECRET_KEY : ", SECRET_KEY)
+
     test = "https://api.upbit.com/v1/orders"
     query = {
         'state': 'done',

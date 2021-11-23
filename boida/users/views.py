@@ -64,13 +64,14 @@ def kakao_login(request, format=None):
 
         # access token, refresh token 생성, 유저가 가입되어(db에 존재) 있어야만 발급받을 수 있다.
         refresh = RefreshToken.for_user(user)
+        user = UserSerializer(user)
 
         print(str(refresh), str(refresh.access_token), "000000000000000000000000000000000000")
 
 
         data = {
             "msg": "가입되었습니다.",
-            "user": list(user.data),
+            "user": user.data,
             'access': str(refresh.access_token),
             'refresh': str(refresh)
         }

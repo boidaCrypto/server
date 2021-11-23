@@ -121,9 +121,9 @@ def api_test(ACCESS_KEY, SECRET_KEY):
         'query_hash_alg': 'SHA512',
     }
 
-    jwt_token = jwt.encode(payload, str(SECRET_KEY))
+    jwt_token = jwt.encode(payload, str(SECRET_KEY)).decode('utf8')
     print(jwt_token)
-    authorize_token = 'Bearer {}'.format(jwt_token).decode('utf8')
+    authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)
     print(res.json())

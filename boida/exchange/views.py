@@ -93,16 +93,6 @@ def ConnectingExchange(request, format=None):
     # # 유저의 거래내역 연동을 위한 비동기 처리 파트
     exchange_synchronization.delay(request.data)
 
-    # a = []
-    # for page_num in range(1, 100000000000000000):
-    #     data = get_transaction(page_num, request.data["access_key"], request.data["secret_key"])
-    #     print(data)
-    #     if data == None:
-    #         break
-    #     a = a + data
-    # print(len(a))
-
-
     data = {
         "msg": "correct API key",
         "exchange_throw_status": test

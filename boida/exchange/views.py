@@ -120,6 +120,7 @@ def api_test(ACCESS_KEY, SECRET_KEY):
     authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)
+    print(res, "0000000000000000000000000000000000000000000000000000")
     return res.status_code
 
 

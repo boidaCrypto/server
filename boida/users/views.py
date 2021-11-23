@@ -77,6 +77,7 @@ def kakao_login(request, format=None):
         # user_refresh_token["refresh_token"] = str(refresh)
         # user_refresh_token.save()
         # 실제 카카오톡으로 실험해보아야함.
+        print(str(refresh), str(refresh.access_token), "000000000000000000000000000000000000")
 
 
         data = {

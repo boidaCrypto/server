@@ -116,13 +116,13 @@ def api_test(ACCESS_KEY, SECRET_KEY):
     query_hash = m.hexdigest()
 
     payload = {
-        'access_key': ACCESS_KEY,
+        'access_key': str(ACCESS_KEY),
         'nonce': str(uuid.uuid4()),
         'query_hash': query_hash,
         'query_hash_alg': 'SHA512',
     }
 
-    jwt_token = jwt.encode(payload, SECRET_KEY)
+    jwt_token = jwt.encode(payload, str(SECRET_KEY))
     authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)

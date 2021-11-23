@@ -99,8 +99,6 @@ def ConnectingExchange(request, format=None):
     }
     return Response(data, status=status.HTTP_200_OK)
 
-
-@permission_classes([AllowAny])
 def api_test(ACCESS_KEY, SECRET_KEY):
     print("Access_key : ", ACCESS_KEY)
     print("SECRET_KEY : ", SECRET_KEY)
@@ -124,9 +122,11 @@ def api_test(ACCESS_KEY, SECRET_KEY):
     }
 
     jwt_token = jwt.encode(payload, str(SECRET_KEY))
+    print(jwt_token)
     authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)
+    print(res.json())
     print(res, "0000000000000000000000000000000000000000000000000000")
     return res.status_code
 

@@ -48,6 +48,7 @@ def exchange_description_directory_path(instance, filename):
 class Exchange(models.Model):
     exchange_name = models.CharField(max_length=10, blank=False)
     exchange_image = models.FileField(upload_to=exchange_directory_path, null=False, default="")
+    exchange_color = models.CharField(max_length=10, default="0xFF1045FF")
     location = models.CharField(max_length=8, choices=LOCATION_CHOICES)
     is_available = models.BooleanField(default=False)
     has_qr = models.BooleanField(default=False)

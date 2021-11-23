@@ -2,7 +2,7 @@ import pymysql
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 
 from users.models import User
@@ -24,7 +24,7 @@ from exchange.tasks import exchange_synchronization
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def ConnectedExchangeList(requests, pk, format=None):
     user = User.objects.get(id=pk)
     user_exchange = ConnectedExchange.objects.filter(user=user, is_deleted=False)
@@ -46,7 +46,7 @@ def ConnectedExchangeList(requests, pk, format=None):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def ListExchange(request, pk, format=None):
     # 현재 연동 가능한 국내 거래소 가져오기 + 사용자의 연결된 거래소인지 정보 추가하기
     domestic_exchange = Exchange.objects.filter(is_available=True, location="domestic")
@@ -65,7 +65,7 @@ def ListExchange(request, pk, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def DeleteExchange(request, format=None):
     connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"],
                                                        pk=request.data["connected_exchange_id"])
@@ -141,16 +141,16 @@ from firebase_admin import firestore
 from firebase_admin import db
 import os
 from pathlib import Path
+#
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# cred_path = os.path.join(BASE_DIR, "boida_firebase_admin.json")
+# cred = credentials.Certificate(cred_path)
+# firebase_admin.initialize_app(cred)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-cred_path = os.path.join(BASE_DIR, "boida_firebase_admin.json")
-cred = credentials.Certificate(cred_path)
-firebase_admin.initialize_app(cred)
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from rest_framework_jwt.settings import api_settings
-
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def FirebaseTest(request, format=None):
     # db = firestore.client()
@@ -160,12 +160,12 @@ def FirebaseTest(request, format=None):
     #     u'money': 700,
     #     u'job': "knight"
     # })
-    JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
-    JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
-    payload = JWT_PAYLOAD_HANDLER("gkgkkgkggkgk")
-    jwt_token = JWT_ENCODE_HANDLER(payload)
-    print(jwt_token)
 
+    user = User.objects.get(email=request.data["email"])
+    refresh = RefreshToken.for_user(user)
+    data = {
+        'access': str(refresh.access_token),
+        'refresh': str(refresh)
+    }
 
-    return Response(status=status.HTTP_200_OK)
-
+    return Response(data, status=status.HTTP_200_OK)

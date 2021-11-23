@@ -41,7 +41,7 @@ def get_transaction(page_num, access_key, secret_key):
         'query_hash_alg': 'SHA512',
     }
 
-    jwt_token = jwt.encode(payload, secret_key)
+    jwt_token = jwt.encode(payload, secret_key).decode('utf8')
     authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
     res = requests.get(ORDER_LIST_API, query, headers=headers)

@@ -123,7 +123,7 @@ def api_test(ACCESS_KEY, SECRET_KEY):
 
     jwt_token = jwt.encode(payload, str(SECRET_KEY))
     print(jwt_token)
-    authorize_token = 'Bearer {}'.format(jwt_token)
+    authorize_token = 'Bearer {}'.format(jwt_token).decode('utf8')
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)
     print(res.json())

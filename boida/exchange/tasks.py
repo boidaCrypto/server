@@ -66,6 +66,7 @@ def exchange_synchronization(request_data):
     a = []
     for page_num in range(1, 100000000000000000):
         data = get_transaction(page_num, request_data["access_key"], request_data["secret_key"])
+        print(data)
         if data == None:
             break
         a = a + data

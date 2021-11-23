@@ -93,11 +93,52 @@ def ConnectingExchange(request, format=None):
     # # 유저의 거래내역 연동을 위한 비동기 처리 파트
     exchange_synchronization.delay(request.data)
 
+    # a = []
+    # for page_num in range(1, 100000000000000000):
+    #     data = get_transaction(page_num, request.data["access_key"], request.data["secret_key"])
+    #     print(data)
+    #     if data == None:
+    #         break
+    #     a = a + data
+    # print(len(a))
+
+
     data = {
         "msg": "correct API key",
         "exchange_throw_status": test
     }
     return Response(data, status=status.HTTP_200_OK)
+
+# def get_transaction(page_num, access_key, secret_key):
+#     ORDER_LIST_API = "https://api.upbit.com/v1/orders"
+#     query = {
+#         'state': 'done',  # 전체 체결 완료된 거래내역 수집
+#         'page': page_num
+#     }
+#     query_string = urlencode(query).encode()
+#
+#     m = hashlib.sha512()
+#     m.update(query_string)
+#     query_hash = m.hexdigest()
+#
+#     payload = {
+#         'access_key': access_key,
+#         'nonce': str(uuid.uuid4()),
+#         'query_hash': query_hash,
+#         'query_hash_alg': 'SHA512',
+#     }
+#
+#     jwt_token = jwt.encode(payload, secret_key)
+#     authorize_token = 'Bearer {}'.format(jwt_token)
+#     headers = {"Authorization": authorize_token}
+#     res = requests.get(ORDER_LIST_API, query, headers=headers)
+#
+#     data = res.json()
+#     if data == []:
+#         data = None
+#     return data
+
+
 
 def api_test(ACCESS_KEY, SECRET_KEY):
     print("Access_key : ", ACCESS_KEY)
@@ -115,19 +156,16 @@ def api_test(ACCESS_KEY, SECRET_KEY):
     query_hash = m.hexdigest()
 
     payload = {
-        'access_key': str(ACCESS_KEY),
+        'access_key': ACCESS_KEY,
         'nonce': str(uuid.uuid4()),
         'query_hash': query_hash,
         'query_hash_alg': 'SHA512',
     }
 
-    jwt_token = jwt.encode(payload, str(SECRET_KEY)).decode('utf8')
-    print(jwt_token)
+    jwt_token = jwt.encode(payload, SECRET_KEY)
     authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
     res = requests.get(test, query, headers=headers)
-    print(res.json())
-    print(res, "0000000000000000000000000000000000000000000000000000")
     return res.status_code
 
 

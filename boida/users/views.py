@@ -65,17 +65,12 @@ def kakao_login(request, format=None):
         # access token, refresh token 생성, 유저가 가입되어(db에 존재) 있어야만 발급받을 수 있다.
         refresh = RefreshToken.for_user(user)
 
-        # refresh token은 저장해야한다(얼핏 보아서 추후 공부).
-        # user_refresh_token = User.objects.get(email=kakao_user["kakao_account"]["email"])
-        # user_refresh_token["refresh_token"] = str(refresh)
-        # user_refresh_token.save()
-        # 실제 카카오톡으로 실험해보아야함.
         print(str(refresh), str(refresh.access_token), "000000000000000000000000000000000000")
 
 
         data = {
             "msg": "가입되었습니다.",
-            "user": list(user),
+            "user": list(user.data),
             'access': str(refresh.access_token),
             'refresh': str(refresh)
         }

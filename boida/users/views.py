@@ -38,21 +38,16 @@ JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 def kakao_login(request, format=None):
     access_token = request.data["access_token"]
     refresh_token = request.data["refresh_token"]
-    print(access_token, refresh_token)
 
     # 유저정보 얻기
     headers = ({'Authorization': f"Bearer {access_token}"})
     user_profile_info_uri = 'https://kapi.kakao.com/v2/user/me'
     user_profile_info = req.post(user_profile_info_uri, headers=headers)
     kakao_user = user_profile_info.json()
-    print(kakao_user)
-
     try:
         user = User.objects.get(email=kakao_user["kakao_account"]["email"])
     except User.DoesNotExist:
         # access token 발급받는 로직 저장 후, create에 넣어준다.
-
-
         print("회원가입된 이메일이 없어 회원가입을 진행합니다.")
         user_create = User.objects.create(
             email=kakao_user["kakao_account"]["email"],

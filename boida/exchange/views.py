@@ -24,7 +24,7 @@ from exchange.tasks import exchange_synchronization
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def ConnectedExchangeList(requests, pk, format=None):
     user = User.objects.get(id=pk)
     user_exchange = ConnectedExchange.objects.filter(user=user, is_deleted=False)
@@ -46,7 +46,7 @@ def ConnectedExchangeList(requests, pk, format=None):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def ListExchange(request, pk, format=None):
     # 현재 연동 가능한 국내 거래소 가져오기 + 사용자의 연결된 거래소인지 정보 추가하기
     domestic_exchange = Exchange.objects.filter(is_available=True, location="domestic")
@@ -65,7 +65,7 @@ def ListExchange(request, pk, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def DeleteExchange(request, format=None):
     connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"],
                                                        pk=request.data["connected_exchange_id"])

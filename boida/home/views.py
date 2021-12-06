@@ -5,12 +5,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 
+from users.models import User
 
 # Create your views here.
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def List(request, format=None):
+    user = User.objects.get(pk=request.data["user"])
     # 유저와 연동한 거래소들을 가져온다.
+
 
     # 현재 자산들을 계산한다.
 

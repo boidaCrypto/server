@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 
 from users.models import User
+from exchange.models import ConnectedExchange
 
 # Create your views here.
 @api_view(['POST'])
@@ -13,6 +14,10 @@ from users.models import User
 def List(request, format=None):
     user = User.objects.get(pk=request.data["user"])
     # 유저와 연동한 거래소들을 가져온다.
+    connected_exchage = ConnectedExchange.objects.filter(user=user)
+    for i in connected_exchage:
+        if i.exchange.exchange_name == "upbit":
+            print("upbit")
 
 
     # 현재 자산들을 계산한다.

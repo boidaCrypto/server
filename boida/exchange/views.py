@@ -86,9 +86,9 @@ def ConnectingExchange(request, format=None):
     if test == 401:
         data = {
             "msg": "wrong API key",
-            "exchange_throw_status": "401"
+            "exchange_throw_status": "403"
         }
-        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data, status=status.HTTP_403_FORBIDDEN)
 
     # # 유저의 거래내역 연동을 위한 비동기 처리 파트
     exchange_synchronization.delay(request.data)

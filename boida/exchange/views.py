@@ -24,7 +24,7 @@ from exchange.tasks import exchange_synchronization
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def ConnectedExchangeList(requests, pk, format=None):
     user = User.objects.get(id=pk)
     user_exchange = ConnectedExchange.objects.filter(user=user, is_deleted=False)
@@ -65,7 +65,7 @@ def ListExchange(request, pk, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def DeleteExchange(request, format=None):
     connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"],
                                                        pk=request.data["connected_exchange_id"])
@@ -76,7 +76,7 @@ def DeleteExchange(request, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def ConnectingExchange(request, format=None):
 
     print("Access_key : ", request.data["access_key"])

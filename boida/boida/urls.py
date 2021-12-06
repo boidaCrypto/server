@@ -13,5 +13,6 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('users/', include('users.urls')),
     path('exchange/', include('exchange.urls')),
-    path('transaction/', include('transaction.urls'))
+    path('transaction/', include('transaction.urls')),
+    path('home/', include('home.urls')),
     ]

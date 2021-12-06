@@ -40,6 +40,7 @@ class User(AbstractUser):
     thumbnail_image = models.TextField(default="")
     access_token = models.TextField(default="")
     refresh_token = models.TextField(default="")
+    fcm_token = models.TextField(default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

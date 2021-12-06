@@ -18,6 +18,7 @@ import MySQLdb
 
 from users.models import User
 from exchange.models import ConnectedExchange, Transaction, Exchange
+from notification.fcm_notification import sent_to_firebase_cloud_messaging
 
 # 주문 리스트 조회 API
 ORDER_LIST_API = "https://api.upbit.com/v1/orders"
@@ -84,4 +85,6 @@ def exchange_synchronization(request_data):
     invoice_data.to_sql(name='transaction', con=conn, if_exists='append', index=False)
     conn.close()
 
+    # 동기화 마침 알림 전송
+    sent_to_firebase_cloud_messaging(user.fcm_token, request_data["exchange_name"])
     return None

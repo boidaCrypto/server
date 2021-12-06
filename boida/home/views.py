@@ -15,12 +15,13 @@ def List(request, format=None):
     user = User.objects.get(pk=request.data["user"])
     # 유저와 연동한 거래소들을 가져온다.
     connected_exchage = ConnectedExchange.objects.filter(user=user)
+    # 현재 자산들을 계산한다.
     for i in connected_exchage:
         if i.exchange.exchange_name == "upbit":
             print("upbit")
-
-
-    # 현재 자산들을 계산한다.
+            response = {
+                ""
+            }
 
     # 계산한 값들을 Firestore에 저장한다.
 

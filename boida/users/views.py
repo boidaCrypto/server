@@ -38,7 +38,7 @@ JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 def kakao_login(request, format=None):
     access_token = request.data["access_token"]
     refresh_token = request.data["refresh_token"]
-    fcm_token = requests.data["fcm_token"]
+    fcm_token = request.data["fcm_token"]
 
     # 유저정보 얻기
     headers = ({'Authorization': f"Bearer {access_token}"})

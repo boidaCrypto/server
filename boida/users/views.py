@@ -70,6 +70,7 @@ def kakao_login(request, format=None):
 
         print(str(refresh), str(refresh.access_token), "000000000000000000000000000000000000")
 
+
         data = {
             "msg": "가입되었습니다.",
             "user": user.data,
@@ -79,21 +80,16 @@ def kakao_login(request, format=None):
         return Response(data, status=status.HTTP_201_CREATED)
 
     # 회원이 이미 존재하면 회원정보 담아서 보내주기.
-    refresh = RefreshToken.for_user(user)
     user_info = UserSerializer(user)
     data = {
         "msg": "200 이미 가입된 회원입니다.",
-        "user": user_info.data,
-        'access': str(refresh.access_token),
-        'refresh': str(refresh)
+        "user": user_info.data
     }
     return Response(data, status=status.HTTP_200_OK)
-
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
 
 class HelloView(APIView):
     permission_classes = (IsAuthenticated,)

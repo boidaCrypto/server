@@ -93,5 +93,6 @@ def home(access_key, secret_key):
                          'valuation_amount': valuation_amount,
                          'valuation_loss': valuation_loss,
                          'valuation_earning_rate': valuation_earning_rate}
+
         container = container.append(container_row, ignore_index=True)
 

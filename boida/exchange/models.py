@@ -44,6 +44,24 @@ def exchange_description_directory_path(instance, filename):
     return path
 
 
+def crypto_description_set_filename_format(now, filename):
+    return "{date}-{microsecond}{extension}".format(
+        date=str(now.date()),
+        microsecond=now.microsecond,
+        extension=os.path.splitext(filename)[1],
+    )
+
+
+def crypto_description_directory_path(instance, filename):
+    now = datetime.datetime.now()
+    crypto_name = instance.crypto_name
+    path = "crypto/image/{crypto_name}/explain/{filename}".format(
+        crypto_name=crypto_name,
+        filename=crypto_description_set_filename_format(now, filename)
+    )
+    return path
+
+
 # Create your models here.
 class Exchange(models.Model):
     exchange_name = models.CharField(max_length=10, blank=False)
@@ -106,3 +124,22 @@ class ExchangeDescription(models.Model):
 
     class Meta:
         db_table = 'exchange_description'
+
+
+class Crypto(models.Model):
+    crypto_name = models.CharField(max_length=10, null=False, default="")
+    image = models.ImageField(upload_to=crypto_description_directory_path)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Asset(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    crypto = models.ForeignKey(Crypto, on_delete=models.SET_NULL, null=True)
+    exchange = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
+    purchase_amount = models.FloatField()
+    valuation_amount = models.FloatField()
+    valuation_loss = models.FloatField()
+    valuation_earning_rate = models.FloatField()
+    balance = models.FloatField()
+    crypto_ratio = models.FloatField()

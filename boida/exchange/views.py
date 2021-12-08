@@ -104,15 +104,14 @@ def ConnectingExchange(request, format=None):
 @permission_classes([IsAuthenticated])
 def CheckExchangeSynchronized(request, format=None):
     user = request.data['user_id']
-    exchange = request.data['exchange_id']
-    connected_exchange = ConnectedExchange.objects.filter(user=user, exchange=exchange)
+    connected_exchange = ConnectedExchange.objects.filter(user=user)
 
     if list(connected_exchange) == []:
         # 204이면, 연결된 거래소가 없음을 나타냄.
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         # 200이면, 연결된 거래소가 존재
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_200_OK)
 
 
 def api_test(ACCESS_KEY, SECRET_KEY):

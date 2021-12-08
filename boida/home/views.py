@@ -19,9 +19,10 @@ def List(request, format=None):
     # 현재 자산들을 계산한다.
     for i in connected_exchange:
         print(i.access_key, i.secret_key)
-        home(i.access_key, i.secret_key)
+
         print(i)
         if i.exchange.exchange_name == "upbit":
+            home(i.access_key, i.secret_key)
 
 
             response = {

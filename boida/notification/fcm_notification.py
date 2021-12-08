@@ -1,6 +1,5 @@
 from firebase_admin import messaging
 
-
 def sent_to_firebase_cloud_messaging(fcm_token, exchange_name):
     message = messaging.Message(
         notification=messaging.Notification(

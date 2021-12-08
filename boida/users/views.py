@@ -63,7 +63,6 @@ def kakao_login(request, format=None):
         )
         user_create.save()
         user = User.objects.get(email=kakao_user["kakao_account"]["email"])
-<<<<<<< HEAD
 
         # access token, refresh token 생성, 유저가 가입되어(db에 존재) 있어야만 발급받을 수 있다.
         refresh = RefreshToken.for_user(user)
@@ -71,36 +70,30 @@ def kakao_login(request, format=None):
 
         print(str(refresh), str(refresh.access_token), "000000000000000000000000000000000000")
 
-=======
-        user = UserSerializer(user)
-        # access token, refresh token 생성, 유저가 가입되어(db에 존재) 있어야만 발급받을 수 있다.
-        refresh = RefreshToken.for_user(user)
-        # refresh token은 저장해야한다(얼핏 보아서 추후 공부).
-        user_refresh_token = User.objects.get(email=kakao_user["kakao_account"]["email"])
-        user_refresh_token["refresh_token"] = str(refresh)
-        user.save()
-        # 실제 카카오톡으로 실험해보아야함.
->>>>>>> parent of d76cef2 (update)
-
         data = {
             "msg": "가입되었습니다.",
             "user": user.data,
-            # 'access': str(refresh.access_token),
-            # 'refresh': str(refresh)
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)
         }
         return Response(data, status=status.HTTP_201_CREATED)
 
     # 회원이 이미 존재하면 회원정보 담아서 보내주기.
+    refresh = RefreshToken.for_user(user)
     user_info = UserSerializer(user)
     data = {
         "msg": "200 이미 가입된 회원입니다.",
-        "user": user_info.data
+        "user": user_info.data,
+        'access': str(refresh.access_token),
+        'refresh': str(refresh)
     }
     return Response(data, status=status.HTTP_200_OK)
+
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
 
 class HelloView(APIView):
     permission_classes = (IsAuthenticated,)

@@ -104,7 +104,8 @@ def ConnectingExchange(request, format=None):
 @permission_classes([IsAuthenticated])
 def CheckExchangeSynchronized(request, format=None):
     user = request.data['user_id']
-    connected_exchange = ConnectedExchange.objects.filter(user=user)
+    exchange = request.data['exchange_id']
+    connected_exchange = ConnectedExchange.objects.filter(user=user, exchange=exchange)
 
     if list(connected_exchange) == []:
         # 204이면, 연결된 거래소가 없음을 나타냄.

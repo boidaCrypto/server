@@ -33,3 +33,17 @@ def List(request, format=None):
 
     # 계산한 값들을 보내준다.
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def CheckConnectedExchange(request, format=None):
+    user = request.data['user_id']
+    connected_exchange = ConnectedExchange.objects.filter(user=user)
+
+    if list(connected_exchange) == []:
+        # 204이면, 연결된 거래소가 없음을 나타냄.
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        # 200이면, 연결된 거래소가 존재
+        return Response(status=status.HTTP_200_OK)

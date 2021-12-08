@@ -89,6 +89,21 @@ def kakao_login(request, format=None):
     }
     return Response(data, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def TestToken(request, format=None):
+
+    user = User.objects.get(email=request.data["email"])
+
+    # access token, refresh token 생성, 유저가 가입되어(db에 존재) 있어야만 발급받을 수 있다.
+    refresh = RefreshToken.for_user(user)
+
+    data = {
+        'access': str(refresh.access_token),
+        'refresh': str(refresh)
+    }
+    return Response(data, status=status.HTTP_200_OK)
+
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

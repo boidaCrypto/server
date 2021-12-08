@@ -5,4 +5,5 @@ from home import views
 
 urlpatterns = [
     path('list', views.List),
+
     ]

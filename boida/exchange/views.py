@@ -175,8 +175,13 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import db
+<<<<<<< HEAD
 import os
 from pathlib import Path
+=======
+# import os
+# from pathlib import Path
+>>>>>>> parent of 2e63f6c (update)
 #
 # BASE_DIR = Path(__file__).resolve().parent.parent
 # cred_path = os.path.join(BASE_DIR, "boida_firebase_admin.json")
@@ -185,6 +190,7 @@ from pathlib import Path
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
+<<<<<<< HEAD
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -205,3 +211,20 @@ def FirebaseTest(request, format=None):
     }
 
     return Response(data, status=status.HTTP_200_OK)
+=======
+from firebase_admin import messaging
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def FirebaseTest(request, format=None):
+
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title='{0}와 연동이 완료되었습니다.'.format("upbit"),
+            body='{0}와 연동이 완료되었습니다.'.format("upbit")
+        ),
+        token="dOX0hjESTiG-yDLsxfdy9j:APA91bENZUlqkCc0KyD4ShvbSf0OmnJKCZdacU4rUPcjlpoU68FfBR03waaHZUe4NzCzA5ufB5GbjykQVrqP6yjU6jdvwJJKgzdu4hHQ8QrAAtyvWzqR5wNSbXJtTM0CxZKP7pg5CEfT",
+    )
+    response = messaging.send(message)
+    print("Successfully sent message", response)
+    return Response(status=status.HTTP_200_OK)
+>>>>>>> parent of 2e63f6c (update)

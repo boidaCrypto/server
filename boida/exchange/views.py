@@ -21,7 +21,6 @@ from sqlalchemy import create_engine
 import MySQLdb
 
 from exchange.tasks import exchange_synchronization
-from firebase_admin import messaging
 
 
 @api_view(['GET'])
@@ -79,6 +78,7 @@ def DeleteExchange(request, format=None):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def ConnectingExchange(request, format=None):
+
     print("Access_key : ", request.data["access_key"])
     print("SECRET_KEY : ", request.data["secret_key"])
     # API KEY 이상 결과 전달.
@@ -99,20 +99,35 @@ def ConnectingExchange(request, format=None):
     }
     return Response(data, status=status.HTTP_200_OK)
 
+# def get_transaction(page_num, access_key, secret_key):
+#     ORDER_LIST_API = "https://api.upbit.com/v1/orders"
+#     query = {
+#         'state': 'done',  # 전체 체결 완료된 거래내역 수집
+#         'page': page_num
+#     }
+#     query_string = urlencode(query).encode()
+#
+#     m = hashlib.sha512()
+#     m.update(query_string)
+#     query_hash = m.hexdigest()
+#
+#     payload = {
+#         'access_key': access_key,
+#         'nonce': str(uuid.uuid4()),
+#         'query_hash': query_hash,
+#         'query_hash_alg': 'SHA512',
+#     }
+#
+#     jwt_token = jwt.encode(payload, secret_key)
+#     authorize_token = 'Bearer {}'.format(jwt_token)
+#     headers = {"Authorization": authorize_token}
+#     res = requests.get(ORDER_LIST_API, query, headers=headers)
+#
+#     data = res.json()
+#     if data == []:
+#         data = None
+#     return data
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def CheckExchangeSynchronized(request, format=None):
-    user = request.data['user_id']
-    exchange = request.data['exchange_id']
-    connected_exchange = ConnectedExchange.objects.filter(user=user, exchange=exchange)
-
-    if list(connected_exchange) == []:
-        # 204이면, 연결된 거래소가 없음을 나타냄.
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    else:
-        # 200이면, 연결된 거래소가 존재
-        return Response(status=status.HTTP_201_CREATED)
 
 
 def api_test(ACCESS_KEY, SECRET_KEY):
@@ -156,9 +171,25 @@ def ListExchangeDescription(request, pk, format=None):
     return Response(data, status=status.HTTP_200_OK)
 
 
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+from firebase_admin import db
+# import os
+# from pathlib import Path
+#
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# cred_path = os.path.join(BASE_DIR, "boida_firebase_admin.json")
+# cred = credentials.Certificate(cred_path)
+# firebase_admin.initialize_app(cred)
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from firebase_admin import messaging
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def FirebaseTest(request, format=None):
+
     message = messaging.Message(
         notification=messaging.Notification(
             title='{0}와 연동이 완료되었습니다.'.format("upbit"),

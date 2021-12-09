@@ -87,9 +87,6 @@ def exchange_synchronization(request_data):
     conn.close()
 
     # Transaction까지 저장이 되었음을 저장 - is_sync를 True로
-
-    print("fcm_token : ", user.fcm_token)
-    print("exchange : ", request_data["exchange_name"])
     connect_exchange.is_sync = True
     connect_exchange.save()
 

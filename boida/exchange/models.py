@@ -88,6 +88,8 @@ class ConnectedExchange(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
+    # transaction까지 저장됨을 알게하는 Trigger
+    is_sync = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'connected_exchange'

@@ -62,7 +62,7 @@ def exchange_synchronization(request_data):
     connect_exchange = ConnectedExchange.objects.create(user=user, exchange=exchange,
                                                         access_key=request_data["access_key"],
                                                         secret_key=request_data["secret_key"])
-    connect_exchange.save()
+
 
     # 거래내역 데이터를 받아서, csv파일로 만든 뒤, DB에 저장.
     a = []
@@ -91,6 +91,7 @@ def exchange_synchronization(request_data):
     print("fcm_token : ", user.fcm_token)
     print("exchange : ", request_data["exchange_name"])
     connect_exchange.is_sync = True
+    connect_exchange.save()
 
     # # 동기화 마침 알림 전송
     sent_to_firebase_cloud_messaging(user.fcm_token, request_data["exchange_name"])

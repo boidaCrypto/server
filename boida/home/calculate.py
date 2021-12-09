@@ -11,6 +11,9 @@ import json
 from time import sleep
 import numpy as np
 from users.models import User
+from sqlalchemy import create_engine
+import pymysql
+from exchange.models import Crypto
 
 
 def accounts(access_key, secret_key):
@@ -32,24 +35,27 @@ def accounts(access_key, secret_key):
 
 def get_coin_price(market_name):
     url = "https://api.upbit.com/v1/candles/minutes/1"
-    querystring = {"market":market_name,"count":"1"}
+    querystring = {"market": market_name, "count": "1"}
     headers = {"Accept": "application/json"}
     res = requests.request("GET", url, headers=headers, params=querystring)
     return res.json()
+
+
 def get_btc_price():
     url = "https://api.upbit.com/v1/candles/minutes/1"
-    querystring = {"market":"KRW-BTC","count":"1"}
+    querystring = {"market": "KRW-BTC", "count": "1"}
     headers = {"Accept": "application/json"}
     res = requests.request("GET", url, headers=headers, params=querystring)
     return res.json()[0]["trade_price"]
 
 
 # Hoem API
-def home(access_key, secret_key):
+def upbit_home(access_key, secret_key, user, exchange):
     data = accounts(access_key, secret_key)
     # 매수금액 평가금액, 평가손익, 평가수익률, 총보유자산
     container = pd.DataFrame(
-        columns=['currency', 'purchase_amount', 'valuation_amount', 'valuation_loss', 'valuation_earning_rate'])
+        columns=['purchase_amount', 'valuation_amount', 'valuation_loss', 'valuation_earning_rate', 'crypto',
+                 'balance'])
 
     # locked가 0이 아닌 행 가져오기.
     calculatable_coin = data[data.locked != 0]
@@ -87,12 +93,30 @@ def home(access_key, secret_key):
         valuation_earning_rate = (coin_price / a.avg_buy_price) * 100 - 100
         print("평가수익률: {0}".format(valuation_earning_rate))
 
+        ### Crypto, 추후에 없을 경우 예외처리 진행.
+        crypto = Crypto.objects.filter(crypto_name=coin_name)
+
         # 최종적으로 테이블에 담기.
         container_row = {'currency': a.currency,
                          'purchase_amount': purchase_amount,
                          'valuation_amount': valuation_amount,
                          'valuation_loss': valuation_loss,
-                         'valuation_earning_rate': valuation_earning_rate}
+                         'valuation_earning_rate': valuation_earning_rate,
+                         'crypto': crypto,
+                         'balance': a.locked,
+                         }
 
         container = container.append(container_row, ignore_index=True)
 
+        # 계산 결과 DB 저장, 저장되어 있다면 삭제 예외처리 만들기.
+        container['user'] = user
+        container['exchange'] = exchange
+
+        # pymysql.install_as_MySQLdb()
+        engine = create_engine(
+            "mysql+mysqldb://admin:" + "admin1234" + "@boida.cpnbrmzhyf3q.ap-northeast-2.rds.amazonaws.com/boida",
+            encoding='utf-8')
+        conn = engine.connect()
+        conn.execute("SET foreign_key_checks = 0;")
+        container.to_sql(name='asset', con=conn, if_exists='append', index=False)
+        conn.close()

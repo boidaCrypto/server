@@ -6,8 +6,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 
 from users.models import User
-from exchange.models import ConnectedExchange
-from home.calculate import home
+from exchange.models import ConnectedExchange, Asset
+from home.calculate import upbit_home
+from home.serializers import AssetSerializer
+
+
 # Create your views here.
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -18,21 +21,18 @@ def List(request, format=None):
     connected_exchange = ConnectedExchange.objects.filter(user=user)
     # 현재 자산들을 계산한다.
     for i in connected_exchange:
-        print(i.access_key, i.secret_key)
-
-        print(i)
         if i.exchange.exchange_name == "upbit":
-            home(i.access_key, i.secret_key)
-
+            # upbit asset 계산 후, DB 저장
+            upbit_home(i.access_key, i.secret_key, user, i.exchange)
+            # 저장된, upbit asset 가져오기.
+            upbit_asset = Asset.objects.filter(user=user, exchange=i.exchange)
+            upbit_asset = AssetSerializer(upbit_asset, many=True)
 
             response = {
-                ""
+                "asset": upbit_asset.data
             }
 
-    # 계산한 값들을 Firestore에 저장한다.
-
-    # 계산한 값들을 보내준다.
-    return Response(status=status.HTTP_200_OK)
+    return Response(response, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

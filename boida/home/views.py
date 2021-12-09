@@ -19,16 +19,17 @@ def List(request, format=None):
     user = User.objects.get(pk=request.data["user"])
     # 유저와 연동한 거래소들을 가져온다.
     connected_exchange = ConnectedExchange.objects.filter(user=user)
-    # 현재 자산들을 계산한다.
+    # 현재 업비트 자산들을 계산한다.
     for i in connected_exchange:
         if i.exchange.exchange_name == "upbit":
-            # 기존의 upbit_asset 있을 경우 삭제
-
             # upbit asset 계산 후, DB 저장
             upbit_home(i.access_key, i.secret_key, user, i.exchange)
             # 저장된, upbit asset 가져오기.
             upbit_asset = Asset.objects.filter(user=user, exchange=i.exchange)
             upbit_asset = AssetSerializer(upbit_asset, many=True)
+
+
+
 
             response = {
                 "total": [

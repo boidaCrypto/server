@@ -15,7 +15,7 @@ from sqlalchemy import create_engine
 import pymysql
 from exchange.models import Crypto, Asset
 
-
+# JSONDecodeError: Expecting value: line 1 column 1 (char 0) 에러가 나는 이유는, 초당 거래소 api 호출 한계가 초과되었기 때문이다.
 def accounts(access_key, secret_key):
     server_url = "https://api.upbit.com"
 

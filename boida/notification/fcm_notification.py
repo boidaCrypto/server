@@ -1,12 +1,11 @@
 from firebase_admin import messaging
 
 
-def sent_to_firebase_cloud_messaging(fcm_token, exchange_name):
-    print("exchange!!!!!!!!!!!!!!!!!!!!!!!!!!:", exchange_name)
+def sent_to_firebase_cloud_messaging(fcm_token):
     message = messaging.Message(
         notification=messaging.Notification(
-            title='{0}와 연동이 완료되었습니다.'.format(exchange_name),
-            body='{0}와 연동이 완료되었습니다.'.format(exchange_name)
+            title='거래소 연동이 완료되었습니다.',
+            body='거래소 연동이 완료되었습니다.'
         ),
         token=fcm_token,
     )

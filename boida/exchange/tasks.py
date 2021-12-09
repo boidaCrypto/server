@@ -91,5 +91,5 @@ def exchange_synchronization(request_data):
     connect_exchange.save()
 
     # # 동기화 마침 알림 전송
-    sent_to_firebase_cloud_messaging(user.fcm_token, request_data["exchange_name"])
+    sent_to_firebase_cloud_messaging(user.fcm_token)
     return None

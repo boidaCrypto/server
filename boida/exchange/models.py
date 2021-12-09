@@ -134,6 +134,8 @@ class Crypto(models.Model):
 
     class Meta:
         db_table = 'crypto'
+    def __str__(self):
+        return self.crypto_name
 
 
 class Asset(models.Model):
@@ -145,7 +147,7 @@ class Asset(models.Model):
     valuation_loss = models.FloatField()
     valuation_earning_rate = models.FloatField()
     balance = models.FloatField()
-    crypto_ratio = models.FloatField()
+    crypto_ratio = models.FloatField(default=0)
 
     class Meta:
         db_table = 'asset'

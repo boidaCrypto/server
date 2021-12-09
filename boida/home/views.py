@@ -22,6 +22,8 @@ def List(request, format=None):
     # 현재 자산들을 계산한다.
     for i in connected_exchange:
         if i.exchange.exchange_name == "upbit":
+            # 기존의 upbit_asset 있을 경우 삭제
+
             # upbit asset 계산 후, DB 저장
             upbit_home(i.access_key, i.secret_key, user, i.exchange)
             # 저장된, upbit asset 가져오기.
@@ -29,7 +31,16 @@ def List(request, format=None):
             upbit_asset = AssetSerializer(upbit_asset, many=True)
 
             response = {
-                "asset": upbit_asset.data
+                "total": [
+                    {
+                        "total_asset": 123,
+                        "total_valuation_loss": 123,
+                        "total_valuation_earning_rate": 123
+                    }
+                ],
+                "exchange": [
+                    upbit_asset.data
+                ]
             }
 
     return Response(response, status=status.HTTP_200_OK)

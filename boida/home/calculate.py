@@ -13,7 +13,7 @@ import numpy as np
 from users.models import User
 from sqlalchemy import create_engine
 import pymysql
-from exchange.models import Crypto
+from exchange.models import Crypto, Asset
 
 
 def accounts(access_key, secret_key):
@@ -30,6 +30,7 @@ def accounts(access_key, secret_key):
 
     res = requests.get(server_url + "/v1/accounts", headers=headers)
     data = pd.json_normalize(res.json())
+    data = data.astype({'balance': float, 'avg_buy_price': float, 'locked': float})
     return data
 
 
@@ -51,10 +52,11 @@ def get_btc_price():
 
 # Hoem API
 def upbit_home(access_key, secret_key, user, exchange):
+
     data = accounts(access_key, secret_key)
     # 매수금액 평가금액, 평가손익, 평가수익률, 총보유자산
     container = pd.DataFrame(
-        columns=['purchase_amount', 'valuation_amount', 'valuation_loss', 'valuation_earning_rate', 'crypto',
+        columns=['purchase_amount', 'valuation_amount', 'valuation_loss', 'valuation_earning_rate', 'crypto_id',
                  'balance'])
 
     # locked가 0이 아닌 행 가져오기.
@@ -69,7 +71,7 @@ def upbit_home(access_key, secret_key, user, exchange):
 
         ### 평가금액 계산
         # 현재 해당 코인의 원화시세 가져오기
-        coin_name = calculatable_coin["currency"]
+        coin_name = calculatable_coin["currency"][i+1]
         krw_market_name = "KRW-" + coin_name
         btc_market_name = "BTC-" + coin_name
         coin_price = get_coin_price(krw_market_name)
@@ -94,23 +96,26 @@ def upbit_home(access_key, secret_key, user, exchange):
         print("평가수익률: {0}".format(valuation_earning_rate))
 
         ### Crypto, 추후에 없을 경우 예외처리 진행.
-        crypto = Crypto.objects.filter(crypto_name=coin_name)
+        crypto = Crypto.objects.get(crypto_name=coin_name)
 
         # 최종적으로 테이블에 담기.
-        container_row = {'currency': a.currency,
+        container_row = {'crypto_id': crypto.id,
                          'purchase_amount': purchase_amount,
                          'valuation_amount': valuation_amount,
                          'valuation_loss': valuation_loss,
                          'valuation_earning_rate': valuation_earning_rate,
-                         'crypto': crypto,
                          'balance': a.locked,
                          }
 
         container = container.append(container_row, ignore_index=True)
 
-        # 계산 결과 DB 저장, 저장되어 있다면 삭제 예외처리 만들기.
-        container['user'] = user
-        container['exchange'] = exchange
+        # 기존의 upbit_asset 있을 경우 삭제
+        upbit_asset = Asset.objects.filter(user=user)
+        upbit_asset.delete()
+
+        # 계산 결과 DB 저장
+        container['user_id'] = user.id
+        container['exchange_id'] = exchange.id
 
         # pymysql.install_as_MySQLdb()
         engine = create_engine(

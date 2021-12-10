@@ -28,9 +28,6 @@ def List(request, format=None):
             upbit_asset = Asset.objects.filter(user=user, exchange=i.exchange)
             upbit_asset = AssetSerializer(upbit_asset, many=True)
 
-
-
-
             response = {
                 "total": [
                     {

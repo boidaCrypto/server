@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 
 from users.models import User
-from exchange.models import ConnectedExchange, Asset
+from exchange.models import ConnectedExchange, Asset, Transaction
 from home.calculate import upbit_home
 from home.serializers import AssetSerializer
 
@@ -43,6 +43,13 @@ def List(request, format=None):
 
     return Response(response, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def TotalAsset(request, format=None):
+    # 최근 거래내역 5개 가져오기, 일자가 겹치는 것은 하나로 몰기.
+
+
+    return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

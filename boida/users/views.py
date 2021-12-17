@@ -116,3 +116,11 @@ class HelloView(APIView):
     def get(self, request):
         content = {'message': 'Hello, World!'}
         return Response(content)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def IsActive(request, format=None):
+    user = User.objects.get(id=request.data["user_id"])
+    user.is_active = request.data["is_active"]
+    user.save()
+    return Response(status=status.HTTP_200_OK)

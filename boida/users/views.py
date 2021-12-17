@@ -121,6 +121,6 @@ class HelloView(APIView):
 @permission_classes([AllowAny])
 def IsActive(request, format=None):
     user = User.objects.get(id=request.data["user_id"])
-    user.is_active2 = request.data["is_active2"]
+    user.now_active = request.data["now_active"]
     user.save()
     return Response(status=status.HTTP_200_OK)

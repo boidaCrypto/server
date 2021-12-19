@@ -82,7 +82,7 @@ class Exchange(models.Model):
 
 class ConnectedExchange(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    exchange = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
+    exchange = models.ForeignKey(Exchange, related_name="exchange", on_delete=models.SET_NULL, null=True)
     access_key = models.TextField(default='')
     secret_key = models.TextField(default='')
     created_at = models.DateTimeField(auto_now_add=True)

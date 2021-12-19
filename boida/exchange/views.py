@@ -164,7 +164,7 @@ def FirebaseTest(request, format=None):
             title='{0}와 연동이 완료되었습니다.'.format("upbit"),
             body='{0}와 연동이 완료되었습니다.'.format("upbit")
         ),
-        token="dOX0hjESTiG-yDLsxfdy9j:APA91bENZUlqkCc0KyD4ShvbSf0OmnJKCZdacU4rUPcjlpoU68FfBR03waaHZUe4NzCzA5ufB5GbjykQVrqP6yjU6jdvwJJKgzdu4hHQ8QrAAtyvWzqR5wNSbXJtTM0CxZKP7pg5CEfT",
+        token="fAghHDLdRvyltpmDB3itF0:APA91bHvKHyUW3f1xYFv8wmJYxICrssbdOWMxml6XHBtGFcsDgqN26Cq7RbZKQUnGZnK8Id185_z-4fYrHgeVldCyXbdTfZTEJSD7PlrgQzIk6vu-xPf_eZ5fV0sEsS8RbB6eEpJ8kj1",
     )
     response = messaging.send(message)
     print("Successfully sent message", response)

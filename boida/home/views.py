@@ -1,7 +1,3 @@
-import operator
-
-import pymysql
-from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,9 +7,9 @@ from users.models import User
 from exchange.models import ConnectedExchange, Asset, Transaction
 from home.calculate import upbit_home
 from home.serializers import AssetSerializer, ConnectedExchangeSerializer
+from transaction.function import transaction_func
 
-import numpy as np
-import pandas as pd
+
 
 
 # Create your views here.
@@ -59,38 +55,12 @@ def TotalAsset(request, format=None):
     connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"], exchange=1)
     transaction = Transaction.objects.filter(connected_exchange=connected_exchange).order_by("-created_at")[:5]
 
-    # 일자별로 분류하기
-    transaction = pd.DataFrame(
-        transaction.values("id", "connected_exchange_id", "side", "price", "market", "executed_volume",
-                           "created_at"))
-    # year-month-day
-    ymd = transaction["created_at"].dt.strftime("%Y-%m-%d")
-    # hour-minute
-    hm = transaction["created_at"].dt.strftime("%H:%M")
-    transaction["ymd"] = ymd
-    transaction["hm"] = hm
-    # 얼마 샀는지
-    transaction["executed_price"] = transaction["price"] * transaction["executed_volume"]
-
-    # 날짜 중복 제거
-    common_created_at = ymd.drop_duplicates(keep='first')
-    result = []
-    for i in common_created_at:
-        data1 = transaction[transaction["ymd"] == i].to_dict(orient='records')
-        data2 = {"date": i, "data": data1}
-        result.append(data2)
-
-    # 거래소 정보 가져오기.
-    exchange_id = transaction["connected_exchange_id"].drop_duplicates(keep='first').values
-    connected_exchange = ConnectedExchange.objects.filter(id__in=exchange_id, is_deleted=False)
-    connected_exchange = ConnectedExchangeSerializer(connected_exchange, many=True)
-
+    result = transaction_func(transaction)
     # price : 체결가격, executed_volume : 체결수량, executed_price : 체결가격,
     response = {
-        "connected_exchange": connected_exchange.data,
-        "transaction": result
+        "connected_exchange": result[0],
+        "transaction": result[1]
     }
-
     return Response(response, status.HTTP_200_OK)
 
 

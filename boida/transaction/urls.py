@@ -5,4 +5,5 @@ from transaction import views
 
 urlpatterns = [
     path('test', views.Test),
-    ]
+    path('total-transaction-list/<int:page>', views.ToalTransactionList),
+]

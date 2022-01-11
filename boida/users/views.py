@@ -18,7 +18,7 @@ from users.serializers import UserSerializer
 import requests as req
 from rest_framework import status
 
-from users.models import User
+from users.models import User, ActiveUser
 from rest_framework_jwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -89,10 +89,10 @@ def kakao_login(request, format=None):
     }
     return Response(data, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def TestToken(request, format=None):
-
     user = User.objects.get(email=request.data["email"])
 
     # access token, refresh token 생성, 유저가 가입되어(db에 존재) 있어야만 발급받을 수 있다.
@@ -117,10 +117,42 @@ class HelloView(APIView):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
+
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def IsActive(request, format=None):
+#     user = User.objects.get(id=request.data["user_id"])
+#     user.now_active = request.data["now_active"]
+#     user.save()
+#     return Response(status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def IsActive(request, format=None):
+def CheckUserActive(request, format=None):
     user = User.objects.get(id=request.data["user_id"])
-    user.now_active = request.data["now_active"]
-    user.save()
+    is_active = request.data["is_active"]
+    is_active_user = ActiveUser.objects.filter(user=user)
+
+    # activeuser 테이블에 user데이터가 있을 때의 로직
+
+    if is_active_user.exists():
+        active_user = ActiveUser.objects.get(user=user)
+        if is_active == True:
+            active_user.is_active = is_active
+            active_user.save()
+        else:
+            active_user.is_active = is_active
+            active_user.save()
+
+    else:
+        active_user = ActiveUser.objects.create(user=user)
+        if is_active == True:
+            active_user.is_active = is_active
+            active_user.save()
+
+        else:
+            active_user.is_active = is_active
+            active_user.save()
+
     return Response(status=status.HTTP_200_OK)

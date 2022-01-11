@@ -6,7 +6,7 @@ urlpatterns = [
     path('kakao/login', views.kakao_login, name='kakao_login'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/token/test', views.TestToken),
-    path('is-active', views.IsActive),
+    path('check-user-active', views.CheckUserActive),
     path('', views.HelloView.as_view(), name="hello"),
 
 ]

@@ -55,7 +55,7 @@ def get_transaction(page_num, access_key, secret_key):
 
 @shared_task
 def exchange_synchronization(request_data):
-    user = User.objects.get(id=request_data["user"])
+    user = User.objects.get(id=request_data["user_id"])
     exchange = Exchange.objects.get(exchange_name=request_data["exchange_name"])
     print(user, "user-------------------")
 

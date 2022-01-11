@@ -5,5 +5,6 @@ from transaction import views
 
 urlpatterns = [
     path('test', views.Test),
-    path('total-transaction-list/<int:page>', views.ToalTransactionList),
+    path('total-transaction/<int:page>', views.ToalTransactionList),
+    path('transaction-detail', views.TransactionDetailList)
 ]

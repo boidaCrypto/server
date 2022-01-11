@@ -7,7 +7,7 @@ from rest_framework import status
 from users.models import User
 from exchange.models import ConnectedExchange
 from exchange.models import Transaction
-from transaction.serializers import TransactionSerializer
+from transaction.serializers import TransactionDetailSerializer
 from transaction.function import transaction_func
 
 
@@ -103,3 +103,23 @@ def ToalTransactionList(request, page, format=None):
             "transaction": result[1]
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def TransactionDetailList(request, format=None):
+    user_id = request.data["user_id"]
+    transaction_id = request.data["transaction_id"]
+
+    transaction = Transaction.objects.get(id=transaction_id)
+    transaction = TransactionDetailSerializer(transaction)
+    
+    # 총 개래내역, 매수, 매도횟수, 매수 총금액, 매도 총금액
+    
+    # 해당 currency 거래내역 집계
+
+    response = {
+        "transaction": transaction.data
+    } 
+
+    return Response(response, status=status.HTTP_200_OK)

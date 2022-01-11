@@ -15,17 +15,15 @@ import uuid
 import hashlib
 from urllib.parse import urlencode
 import requests
-import csv
-import pandas as pd
-from sqlalchemy import create_engine
-import MySQLdb
+from transaction.function import transaction_func
+
 
 from exchange.tasks import exchange_synchronization
 from firebase_admin import messaging
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def ConnectedExchangeList(requests, pk, format=None):
     user = User.objects.get(id=pk)
     user_exchange = ConnectedExchange.objects.filter(user=user, is_deleted=False)
@@ -66,7 +64,7 @@ def ListExchange(request, pk, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def DeleteExchange(request, format=None):
     connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"],
                                                        pk=request.data["connected_exchange_id"])
@@ -77,7 +75,7 @@ def DeleteExchange(request, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def ConnectingExchange(request, format=None):
     print("Access_key : ", request.data["access_key"])
     print("SECRET_KEY : ", request.data["secret_key"])
@@ -101,7 +99,7 @@ def ConnectingExchange(request, format=None):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def CheckExchangeSynchronized(request, format=None):
     user = request.data['user_id']
     exchange = request.data['exchange_id']
@@ -169,3 +167,32 @@ def FirebaseTest(request, format=None):
     response = messaging.send(message)
     print("Successfully sent message", response)
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def ListExchangeAsset(request, format=None):
+    # 상단파트(그래프 등등)
+
+    # 상세 자산 파트
+
+    # 최근 거래내역 파트
+    connected_exchange = ConnectedExchange.objects.get(user=request.data["user_id"], exchange=1)
+    transaction = Transaction.objects.filter(connected_exchange=connected_exchange).order_by("-created_at")[:5]
+
+    result = transaction_func(transaction)
+    # price : 체결가격, executed_volume : 체결수량, executed_price : 체결가격,
+
+
+    response = {
+        # 상단 파트의 결과
+
+        # 상세 자산 파트의 결과
+
+
+        # 최근 거래내역 파트의 결과
+        "connected_exchange": result[0],
+        "transaction": result[1]
+    }
+
+    return Response(response, status=status.HTTP_200_OK)

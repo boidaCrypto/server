@@ -17,7 +17,7 @@ from transaction.function import transaction_func
 @permission_classes([AllowAny])
 def List(request, format=None):
     #
-    user = User.objects.get(pk=request.data["user"])
+    user = User.objects.get(pk=request.data["user_id"])
     # 유저와 연동한 거래소들을 가져온다.
     connected_exchange = ConnectedExchange.objects.filter(user=user)
     # 현재 업비트 자산들을 계산한다.

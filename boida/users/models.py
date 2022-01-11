@@ -32,7 +32,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
     platform_type = models.CharField(max_length=25, blank=False)
-    platform_id = models.CharField(max_length=255,blank=True, null=True, default="")
+    platform_id = models.CharField(max_length=255, blank=True, null=True, default="")
     nickname = models.CharField(max_length=25, blank=True, null=True, default="")
     age_range = models.CharField(max_length=25, blank=True, null=True, default="")
     gender = models.CharField(max_length=6, blank=True, null=True, default="")
@@ -58,3 +58,11 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class ActiveUser(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    is_active = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'active_user'

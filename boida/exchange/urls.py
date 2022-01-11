@@ -10,5 +10,7 @@ urlpatterns = [
     path('delete-exchange', views.DeleteExchange),
     path('list-exchange-description/<int:pk>', views.ListExchangeDescription),
     path('check-exchange-synchronized', views.CheckExchangeSynchronized),
-    path('firebase-test', views.FirebaseTest)
-    ]
+    path('firebase-test', views.FirebaseTest),
+
+    path('list', views.ListExchangeAsset)
+]

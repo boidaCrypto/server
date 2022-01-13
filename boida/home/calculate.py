@@ -1,19 +1,18 @@
-import pandas
-import os
 import jwt
 import uuid
-import hashlib
-from urllib.parse import urlencode
 import requests
-import csv
 import pandas as pd
-import json
 from time import sleep
-import numpy as np
-from users.models import User
 from sqlalchemy import create_engine
-import pymysql
 from exchange.models import Crypto, Asset
+
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+import urllib.request
+import time
 
 
 # JSONDecodeError: Expecting value: line 1 column 1 (char 0) 에러가 나는 이유는, 초당 거래소 api 호출 한계가 초과되었기 때문이다.
@@ -72,8 +71,7 @@ def get_btc_price():
 
 # Hoem API
 def upbit_home(access_key, secret_key, user, exchange):
-
-# ------------------------------------알고리즘 start ------------------------------------
+    # ------------------------------------알고리즘 start ------------------------------------
     data = accounts(access_key, secret_key)
     # 매수금액 평가금액, 평가손익, 평가수익률, 총보유자산
     container = pd.DataFrame(
@@ -130,10 +128,15 @@ def upbit_home(access_key, secret_key, user, exchange):
         ### 평가손익 계산
         valuation_loss = valuation_amount - purchase_amount
         print("평가손익: {0}".format(valuation_loss))
-# ------------------------------------알고리즘 end ------------------------------------
+        # ------------------------------------알고리즘 end ------------------------------------
 
         ### Crypto, 추후에 없을 경우 예외처리 진행.
-        crypto = Crypto.objects.get(crypto_name=coin_name)
+        print(coin_name)
+        try:
+            crypto = Crypto.objects.get(crypto_name=coin_name)
+        except Exception as e:
+            print(e)
+
 
         # 최종적으로 테이블에 담기.
         container_row = {'crypto_id': crypto.id,

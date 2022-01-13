@@ -4,6 +4,8 @@ from exchange import models
 from home import views
 
 urlpatterns = [
+
+    path('test', views.Test),
     path('list', views.List),
     path('check-connected-exchange', views.CheckConnectedExchange),
     path('total-asset', views.TotalAsset)

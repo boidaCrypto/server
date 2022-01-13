@@ -11,12 +11,18 @@ from transaction.function import transaction_func
 
 
 
-
 # Create your views here.
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def List(request, format=None):
-    #
+    ### 연결된 데이터가 없을 경우, no data onboarding page
+    user = request.data['user_id']
+    connected_exchange = ConnectedExchange.objects.filter(user=user)
+    if list(connected_exchange) == []:
+        # 204이면, 연결된 거래소가 없음을 나타냄.
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    ### 연결된 데이터가 있을 경우, Home page
     user = User.objects.get(pk=request.data["user_id"])
     # 유저와 연동한 거래소들을 가져온다.
     connected_exchange = ConnectedExchange.objects.filter(user=user)
@@ -76,3 +82,31 @@ def CheckConnectedExchange(request, format=None):
     else:
         # 200이면, 연결된 거래소가 존재
         return Response(status=status.HTTP_200_OK)
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def Test(request, format=None):
+    import boto3
+    AWS_ACCESS_KEY_ID = 'AKIARZNCNJPLGWSFJJG7'
+    AWS_SECRET_ACCESS_KEY = '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'
+
+    coin_name = "inj".upper()
+
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+    response = s3_client.upload_file(
+        "C:/Users/qudrh/Documents/GitHub/server/boida/" + coin_name + ".jpg",
+        "boida",
+        "crypto/image/" + coin_name + "/explain/" + coin_name + ".png"
+
+    )
+
+
+    return Response(status=status.HTTP_200_OK)

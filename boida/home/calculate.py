@@ -7,13 +7,7 @@ from sqlalchemy import create_engine
 from exchange.models import Crypto, Asset
 
 import requests
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
-import urllib.request
-import time
-
+from home.crawling import coin_crawling
 
 # JSONDecodeError: Expecting value: line 1 column 1 (char 0) 에러가 나는 이유는, 초당 거래소 api 호출 한계가 초과되었기 때문이다.
 def accounts(access_key, secret_key):
@@ -135,6 +129,7 @@ def upbit_home(access_key, secret_key, user, exchange):
         try:
             crypto = Crypto.objects.get(crypto_name=coin_name)
         except Exception as e:
+            coin_crawling(coin_name)
             print(e)
 
 

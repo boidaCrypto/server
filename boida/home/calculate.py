@@ -129,8 +129,11 @@ def upbit_home(access_key, secret_key, user, exchange):
         try:
             crypto = Crypto.objects.get(crypto_name=coin_name)
         except Exception as e:
-            coin_crawling(coin_name)
-            print(e)
+            crypto = coin_crawling(coin_name)
+            print(e, "DB에 해당 암호화폐가 없어, 크롤링으로 코인 정보를 가져옵니다.")
+
+        if crypto ==400:
+            print("잘못되었습니다.")
 
 
         # 최종적으로 테이블에 담기.

@@ -13,6 +13,7 @@ from botocore.client import Config
 AWS_ACCESS_KEY_ID = 'AKIARZNCNJPLGWSFJJG7'
 AWS_SECRET_ACCESS_KEY = '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'
 
+
 def coin_crawling(coin_name):
     # 크롬 드라이버가 위치한 경로
     path = 'C:/Users/qudrh/Desktop/chromedriver.exe'
@@ -42,14 +43,30 @@ def coin_crawling(coin_name):
         urllib.request.urlretrieve(img_url, '{0}.jpg'.format(img['alt']))
 
         # s3에 파일 업로드
+        coin_name = coin_name.upper()
 
-
-        # coin 데이터에 넣기.
-        Crypto.objects.create(
-            crypto_name="",
-            image="",
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
         )
 
+        # s3 이미지 파일 경로 설정
+        s3_img_path = "crypto/image/" + coin_name + "/explain/" + coin_name + ".png"
+
+        response = s3_client.upload_file(
+            "C:/Users/qudrh/Documents/GitHub/server/boida/" + coin_name + ".jpg",
+            "boida",
+            s3_img_path
+        )
+
+        # coin 데이터에 넣기.
+        crypto = Crypto.objects.create(
+            crypto_name=coin_name,
+            image=s3_img_path,
+        )
+        return crypto
     else:
         # 여기에 로그 쌓이게 나중
         print("status_code = 400")
+        return 400

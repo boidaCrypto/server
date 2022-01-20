@@ -13,7 +13,7 @@ from transaction.function import transaction_func
 # Create your views here.
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def List2(request, format=None):
+def List(request, format=None):
     ### 연결된 데이터가 없을 경우, no data onboarding page
     user = request.data['user_id']
     user_info = User.objects.get(id=user)
@@ -60,47 +60,6 @@ def List2(request, format=None):
     return Response(response, status=status.HTTP_200_OK)
 
 
-# Create your views here.
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def List(request, format=None):
-    ### 연결된 데이터가 없을 경우, no data onboarding page
-    user = request.data['user_id']
-    connected_exchange = ConnectedExchange.objects.filter(user=user)
-    if list(connected_exchange) == []:
-        # 204이면, 연결된 거래소가 없음을 나타냄.
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    ### 연결된 데이터가 있을 경우, Home page
-    user = User.objects.get(pk=request.data["user_id"])
-    # 유저와 연동한 거래소들을 가져온다.
-    connected_exchange = ConnectedExchange.objects.filter(user=user)
-    # 현재 업비트 자산들을 계산한다.
-    for i in connected_exchange:
-        if i.exchange.exchange_name == "upbit":
-            # upbit asset 계산 후, DB 저장
-            upbit_home(i.access_key, i.secret_key, user, i.exchange)
-            # 저장된, upbit asset 가져오기.
-            upbit_asset = Asset.objects.filter(user=user, exchange=i.exchange)
-            upbit_asset = AssetSerializer(upbit_asset, many=True)
-            print(upbit_asset)
-
-            response = {
-                "total": [
-                    {
-                        "total_asset": 123,
-                        "total_valuation_loss": 123,
-                        "total_valuation_earning_rate": 123
-                    }
-                ],
-                "exchange": [
-                    upbit_asset.data
-                ]
-            }
-
-    return Response(response, status=status.HTTP_200_OK)
-
-    # 거래내역이 존재하지 않는 경우?
 
 
 @api_view(['POST'])

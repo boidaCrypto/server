@@ -40,7 +40,9 @@ def coin_crawling(coin_name):
         soup = BeautifulSoup(html, 'html.parser')
         img = soup.select_one('div.nameHeader > img')
         img_url = img['src']
-        urllib.request.urlretrieve(img_url, '{0}.jpg'.format(img['alt']))
+        # urllib.request.urlretrieve(img_url, '{0}.jpg'.format(img['alt']))
+        urllib.request.urlretrieve(img_url, '{0}.jpg'.format(coin_name))
+
 
         # s3에 파일 업로드
         coin_name = coin_name.upper()

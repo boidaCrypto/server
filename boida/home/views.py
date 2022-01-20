@@ -10,6 +10,55 @@ from home.serializers import AssetSerializer, ConnectedExchangeSerializer
 from transaction.function import transaction_func
 
 
+# Create your views here.
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def List2(request, format=None):
+    ### 연결된 데이터가 없을 경우, no data onboarding page
+    user = request.data['user_id']
+    user_info = User.objects.get(id=user)
+
+    # 현재는 업비트 대상으로만 api
+    connected_exchange = ConnectedExchange.objects.get(user=user)
+
+    result = upbit_home(connected_exchange.access_key, connected_exchange.secret_key)
+    # 총 매수가(수익률 계산을 위해 필요함)
+    purchase_amount = result["purchase_amount"].sum()
+
+    # 총 평가액
+    valuation_amount = result["valuation_amount"].sum()
+    # 수익률
+    earning_rate = (valuation_amount / purchase_amount) * 100 - 100
+    # 평가손익
+    loss = result["valuation_loss"].sum()
+
+    # 거래소 이름
+    connected_exchange_name = connected_exchange.exchange.exchange_name
+    # 거래소 이미지
+    connected_exchange_image = "https://boida.s3.ap-northeast-2.amazonaws.com/{0}".format(connected_exchange.exchange.exchange_image)
+    response = {
+        "user": {
+            "user_name ": user_info.nickname,
+            "user_profile": user_info.profile_image
+        },
+        "connected_exchange_total": {
+            "valuation_amount": valuation_amount,
+            "loss": loss,
+            "earning_rate": earning_rate,
+        },
+        "connected_exchange": [
+            {
+                "connected_exchange_name": connected_exchange_name,
+                "connected_exchange_image": connected_exchange_image,
+                "valuation_amount": valuation_amount,
+                "loss": loss,
+                "earning_rate": earning_rate,
+            }
+        ]
+
+    }
+    return Response(response, status=status.HTTP_200_OK)
+
 
 # Create your views here.
 @api_view(['POST'])
@@ -34,6 +83,7 @@ def List(request, format=None):
             # 저장된, upbit asset 가져오기.
             upbit_asset = Asset.objects.filter(user=user, exchange=i.exchange)
             upbit_asset = AssetSerializer(upbit_asset, many=True)
+            print(upbit_asset)
 
             response = {
                 "total": [
@@ -84,9 +134,6 @@ def CheckConnectedExchange(request, format=None):
         return Response(status=status.HTTP_200_OK)
 
 
-
-
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def Test(request, format=None):
@@ -107,6 +154,5 @@ def Test(request, format=None):
         "crypto/image/" + coin_name + "/explain/" + coin_name + ".png"
 
     )
-
 
     return Response(status=status.HTTP_200_OK)

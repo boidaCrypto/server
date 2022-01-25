@@ -19,47 +19,82 @@ def List(request, format=None):
     user_info = User.objects.get(id=user)
 
     # 현재는 업비트 대상으로만 api
-    connected_exchange = ConnectedExchange.objects.get(user=user)
 
-    result = upbit_home(connected_exchange.access_key, connected_exchange.secret_key)
-    # 총 매수가(수익률 계산을 위해 필요함)
-    purchase_amount = result["purchase_amount"].sum()
-
-    # 총 평가액
-    valuation_amount = result["valuation_amount"].sum()
-    # 수익률
-    earning_rate = (valuation_amount / purchase_amount) * 100 - 100
-    # 평가손익
-    loss = result["valuation_loss"].sum()
+    # 연동된 거래소가 없을 경우.
+    try:
+        connected_exchange = ConnectedExchange.objects.get(user=user)
+    except Exception as e:
+        print(e, "{0}님의 연동된 거래소가 없습니다.".format(user_info.nickname))
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     # 거래소 이름
     connected_exchange_name = connected_exchange.exchange.exchange_name
     # 거래소 이미지
-    connected_exchange_image = "https://boida.s3.ap-northeast-2.amazonaws.com/{0}".format(connected_exchange.exchange.exchange_image)
-    response = {
-        "user": {
-            "user_name ": user_info.nickname,
-            "user_profile": user_info.profile_image
-        },
-        "connected_exchange_total": {
-            "valuation_amount": valuation_amount,
-            "loss": loss,
-            "earning_rate": earning_rate,
-        },
-        "connected_exchange": [
-            {
-                "connected_exchange_name": connected_exchange_name,
-                "connected_exchange_image": connected_exchange_image,
+    connected_exchange_image = "https://boida.s3.ap-northeast-2.amazonaws.com/{0}".format(
+        connected_exchange.exchange.exchange_image)
+
+    result = upbit_home(connected_exchange.access_key, connected_exchange.secret_key)
+
+    # 업비트 거래소 연동되어 있으나, 데이터가 없을 경우
+    if result.shape[0] == 0:
+        response = {
+            "user": {
+                "user_name ": user_info.nickname,
+                "user_profile": user_info.profile_image
+            },
+            "connected_exchange_total": {
+                "valuation_amount": 0,
+                "loss": 0,
+                "earning_rate": 0,
+            },
+            "connected_exchange": [
+                {
+                    "connected_exchange_name": connected_exchange_name,
+                    "connected_exchange_image": connected_exchange_image,
+                    "valuation_amount": 0,
+                    "loss": 0,
+                    "earning_rate": 0,
+                }
+            ]
+
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
+    else:
+
+        # 총 매수가(수익률 계산을 위해 필요함)
+        purchase_amount = result["purchase_amount"].sum()
+
+        # 총 평가액
+        valuation_amount = result["valuation_amount"].sum()
+        # 수익률
+        earning_rate = (valuation_amount / purchase_amount) * 100 - 100
+        # 평가손익
+        loss = result["valuation_loss"].sum()
+
+        response = {
+            "user": {
+                "user_name ": user_info.nickname,
+                "user_profile": user_info.profile_image
+            },
+            "connected_exchange_total": {
                 "valuation_amount": valuation_amount,
                 "loss": loss,
                 "earning_rate": earning_rate,
-            }
-        ]
+            },
+            "connected_exchange": [
+                {
+                    "connected_exchange_name": connected_exchange_name,
+                    "connected_exchange_image": connected_exchange_image,
+                    "valuation_amount": valuation_amount,
+                    "loss": loss,
+                    "earning_rate": earning_rate,
+                }
+            ]
 
-    }
-    return Response(response, status=status.HTTP_200_OK)
-
-
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

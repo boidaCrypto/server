@@ -22,7 +22,7 @@ def List(request, format=None):
 
     # 연동된 거래소가 없을 경우.
     try:
-        connected_exchange = ConnectedExchange.objects.get(user=user)
+        connected_exchange = ConnectedExchange.objects.get(user=user, is_deleted=False)
     except Exception as e:
         print(e, "{0}님의 연동된 거래소가 없습니다.".format(user_info.nickname))
         return Response(status=status.HTTP_204_NO_CONTENT)

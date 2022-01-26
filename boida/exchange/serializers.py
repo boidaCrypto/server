@@ -7,6 +7,11 @@ class ExchangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exchange
         fields = '__all__'
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['exchange_color'] = int(instance.exchange_color, 16)
+        return response
+
 
 
 class ConnectedExchangeSerializer(serializers.ModelSerializer):
